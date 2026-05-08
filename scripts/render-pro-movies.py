@@ -11,7 +11,13 @@ SOURCE_ROOT = Path("/Users/tico/Downloads/proyecto_carolina/proyecto carolina me
 CONTENT_PATH = ROOT / "src" / "data" / "content.json"
 OUTPUT = ROOT / "final-renders-pro-v2"
 PUBLIC_MOVIES = ROOT / "public" / "assets" / "mini-movies"
-MUSIC_PATH = Path("/Users/tico/Downloads/Taylor Swift - Out Of The Woods.mp3")
+STAGE_MUSIC = {
+    1: Path("/Users/tico/Downloads/Taylor Swift - Out Of The Woods.mp3"),
+    2: Path("/Users/tico/Downloads/Bruno Mars - Just the Way You Are.mp3"),
+    3: Path("/Users/tico/Downloads/one-direction-steal-my-girl_(MP3.co).mp3"),
+    4: Path("/Users/tico/Downloads/ROLE MODEL - Deeply Still In Love (Official Music Video).mp3"),
+    5: Path("/Users/tico/Downloads/Bruno Mars - Marry You.mp3"),
+}
 FONT = "/System/Library/Fonts/Supplemental/Arial.ttf"
 SECONDS_PER_PHOTO = 1.65
 MAX_VIDEO_SECONDS = 10
@@ -148,7 +154,7 @@ def has_audio(path: Path) -> bool:
     return result.returncode == 0 and "audio" in result.stdout
 
 
-def public_encode(source: Path, destination: Path) -> None:
+def public_encode(source: Path, destination: Path, *, music_path: Path | None = None) -> None:
     destination.parent.mkdir(parents=True, exist_ok=True)
     duration = video_duration(source) or 0
     video_filter = (
@@ -157,9 +163,9 @@ def public_encode(source: Path, destination: Path) -> None:
         "fps=30,setsar=1,format=yuv420p[v]"
     )
     command = ["ffmpeg", "-y", "-hide_banner", "-loglevel", "error", "-i", str(source)]
-    if MUSIC_PATH.exists() and duration > 0:
+    if music_path and music_path.exists() and duration > 0:
         fade_start = max(0.0, duration - 2.5)
-        command += ["-stream_loop", "-1", "-i", str(MUSIC_PATH)]
+        command += ["-stream_loop", "-1", "-i", str(music_path)]
         audio_filter = (
             "[0:a]volume=1.18,aformat=sample_rates=44100:channel_layouts=stereo[a0];"
             f"[1:a]atrim=0:{duration},asetpts=PTS-STARTPTS,volume=0.13,"
@@ -309,6 +315,7 @@ def main() -> None:
     PUBLIC_MOVIES.mkdir(parents=True, exist_ok=True)
 
     stage_outputs: list[Path] = []
+    public_stage_outputs: list[Path] = []
     for episode in content["episodes"]:
         stage = int(episode["id"])
         stage_dir = OUTPUT / "segments" / f"etapa-{stage}"
@@ -347,18 +354,22 @@ def main() -> None:
 
         stage_output = OUTPUT / f"etapa-{stage}.mp4"
         concat(segments, stage_output)
-        public_encode(stage_output, PUBLIC_MOVIES / f"etapa-{stage}.mp4")
+        public_stage_output = PUBLIC_MOVIES / f"etapa-{stage}.mp4"
+        public_encode(stage_output, public_stage_output, music_path=STAGE_MUSIC.get(stage))
         stage_outputs.append(stage_output)
+        public_stage_outputs.append(public_stage_output)
         print(stage_output)
 
     credits = OUTPUT / "cards" / "end-credits.jpg"
     credits_segment = OUTPUT / "segments" / "credits.mp4"
+    credits_public = OUTPUT / "segments" / "credits-public.mp4"
     credits_card(credits, content["credits"])
     render_segment(credits, credits_segment, duration=7)
+    public_encode(credits_segment, credits_public, music_path=STAGE_MUSIC.get(5))
 
     complete = OUTPUT / "3-meses-completo.mp4"
     concat(stage_outputs + [credits_segment], complete)
-    public_encode(complete, PUBLIC_MOVIES / "3-meses-completo.mp4")
+    concat(public_stage_outputs + [credits_public], PUBLIC_MOVIES / "3-meses-completo.mp4")
     print(complete)
 
 
