@@ -234,11 +234,13 @@ svg {
 
 .profiles-grid {
   align-items: start;
-  display: flex;
-  gap: clamp(20px, 2.3vw, 34px);
+  display: grid;
+  gap: clamp(14px, 1.7vw, 26px);
+  grid-template-columns: repeat(6, minmax(0, 1fr));
   justify-content: center;
   margin: 0 auto;
-  max-width: 1060px;
+  max-width: 1040px;
+  width: 100%;
 }
 
 .profile-card {
@@ -248,7 +250,7 @@ svg {
   justify-items: center;
   min-width: 0;
   text-decoration: none;
-  width: 150px;
+  width: 100%;
 }
 
 .profile-avatar {
@@ -259,7 +261,7 @@ svg {
   display: block;
   overflow: hidden;
   transition: border-color 0.2s ease, transform 0.2s ease;
-  width: 150px;
+  width: min(100%, 140px);
 }
 
 .profile-avatar img {
@@ -787,7 +789,6 @@ svg {
   }
 
   .profiles-grid {
-    display: grid;
     grid-template-columns: repeat(2, minmax(0, 150px));
     justify-content: center;
     row-gap: 26px;
