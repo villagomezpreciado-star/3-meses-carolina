@@ -31,6 +31,7 @@ export const VideoPlayer = ({ src }: { src: string }) => {
       <video
         ref={videoRef}
         src={src}
+        controls
         preload="metadata"
         playsInline
         onPlay={() => setIsPlaying(true)}
