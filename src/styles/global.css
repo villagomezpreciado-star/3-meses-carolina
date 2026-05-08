@@ -201,6 +201,19 @@ svg {
   flex-direction: column;
   justify-content: center;
   padding: 42px 4% 56px;
+  position: relative;
+}
+
+.profiles-netflix-logo {
+  color: var(--accent-red);
+  font-size: clamp(1.75rem, 3vw, 2.8rem);
+  font-weight: 800;
+  left: 4%;
+  letter-spacing: -0.035em;
+  line-height: 1;
+  position: fixed;
+  top: 36px;
+  z-index: 3;
 }
 
 .profiles-panel {
@@ -761,6 +774,12 @@ svg {
   .profiles-page {
     justify-content: flex-start;
     padding: 86px 5% 44px;
+  }
+
+  .profiles-netflix-logo {
+    font-size: 1.65rem;
+    left: 5%;
+    top: 24px;
   }
 
   .profiles-panel h1 {

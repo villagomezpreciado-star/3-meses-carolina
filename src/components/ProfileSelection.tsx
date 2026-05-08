@@ -2,7 +2,18 @@ import { Link } from 'react-router-dom';
 import type { Content } from '../types';
 import { assetUrl } from '../utils/assets';
 
+const PROFILE_IMAGES: Record<number, string> = {
+  1: '/assets/ep1/photos/014.jpg',
+  2: '/assets/ep2/photos/003.jpg',
+  3: '/assets/ep3/photos/010.jpg',
+  4: '/assets/ep4/photos/003.jpg',
+  5: '/assets/ep5/photos/032.jpg',
+};
+
 const profileImageFor = (episode: Content['episodes'][number], index: number) => {
+  if (PROFILE_IMAGES[episode.id]) {
+    return PROFILE_IMAGES[episode.id];
+  }
   const fallback = episode.thumbnail;
   if (!episode.photos.length) {
     return fallback;
@@ -13,6 +24,7 @@ const profileImageFor = (episode: Content['episodes'][number], index: number) =>
 
 export const ProfileSelection = ({ data }: { data: Content }) => (
   <main className="profiles-page" aria-labelledby="profiles-title">
+    <div className="profiles-netflix-logo">NETFLIX</div>
     <section className="profiles-panel">
       <h1 id="profiles-title">¿Quién está mirando?</h1>
       <div className="profiles-grid">
