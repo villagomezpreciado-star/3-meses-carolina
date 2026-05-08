@@ -9,7 +9,7 @@ from PIL import Image, ImageDraw, ImageFont
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE_ROOT = Path("/Users/tico/Downloads/proyecto_carolina/proyecto carolina meses")
 CONTENT_PATH = ROOT / "src" / "data" / "content.json"
-OUTPUT = ROOT / "final-renders"
+OUTPUT = ROOT / "final-renders-audio-v3"
 PUBLIC_MOVIES = ROOT / "public" / "assets" / "mini-movies"
 FONT = "/System/Library/Fonts/Supplemental/Arial.ttf"
 SECONDS_PER_PHOTO = 1.45
@@ -102,6 +102,15 @@ def video_duration(path: Path) -> float | None:
         return None
 
 
+def has_audio(path: Path) -> bool:
+    result = subprocess.run(
+        ["ffprobe", "-v", "error", "-select_streams", "a:0", "-show_entries", "stream=codec_type", "-of", "csv=p=0", str(path)],
+        capture_output=True,
+        text=True,
+    )
+    return result.returncode == 0 and "audio" in result.stdout
+
+
 def render_segment(source: Path, destination: Path, *, duration: float | None = None) -> bool:
     if destination.exists() and destination.stat().st_size > 0:
         return True
@@ -112,14 +121,16 @@ def render_segment(source: Path, destination: Path, *, duration: float | None = 
         return False
 
     destination.parent.mkdir(parents=True, exist_ok=True)
+    segment_duration = duration or SECONDS_PER_PHOTO
     command = ["ffmpeg", "-y", "-hide_banner", "-loglevel", "error"]
     if is_image and not is_gif:
-        command += ["-loop", "1", "-t", str(duration or SECONDS_PER_PHOTO)]
+        command += ["-loop", "1", "-t", str(segment_duration)]
     elif is_gif:
-        command += ["-t", str(duration or SECONDS_PER_PHOTO)]
+        command += ["-t", str(segment_duration)]
     else:
-        command += ["-t", str(min(video_duration(source) or MAX_VIDEO_SECONDS, MAX_VIDEO_SECONDS))]
-    command += ["-i", str(source)]
+        segment_duration = min(video_duration(source) or MAX_VIDEO_SECONDS, MAX_VIDEO_SECONDS)
+        command += ["-t", str(segment_duration)]
+    command += ["-i", str(source), "-f", "lavfi", "-t", str(segment_duration), "-i", "anullsrc=channel_layout=stereo:sample_rate=44100"]
     filter_graph = (
         "[0:v]split=2[bg][fg];"
         "[bg]scale=1080:1920:force_original_aspect_ratio=increase,"
@@ -133,13 +144,23 @@ def render_segment(source: Path, destination: Path, *, duration: float | None = 
         filter_graph,
         "-map",
         "[out]",
-        "-an",
+        "-map",
+        "0:a:0" if (not is_image and has_audio(source)) else "1:a:0",
         "-c:v",
         "libx264",
         "-preset",
         "ultrafast",
         "-crf",
         "25",
+        "-c:a",
+        "aac",
+        "-ar",
+        "44100",
+        "-ac",
+        "2",
+        "-b:a",
+        "128k",
+        "-shortest",
         "-pix_fmt",
         "yuv420p",
         "-movflags",

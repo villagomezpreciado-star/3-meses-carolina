@@ -3,6 +3,7 @@ dist/
 .npm-cache/
 renders/
 final-renders/
+final-renders-audio*/
 AGENTS.md
 __pycache__/
 *.pyc
