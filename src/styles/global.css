@@ -26,6 +26,11 @@ body {
   min-width: 320px;
 }
 
+img,
+video {
+  max-width: 100%;
+}
+
 button,
 a {
   -webkit-tap-highlight-color: transparent;
@@ -168,6 +173,7 @@ svg {
   font-size: 1.4rem;
   font-weight: 600;
   transition: background 0.3s ease;
+  white-space: nowrap;
 }
 
 .btn-play {
@@ -241,7 +247,7 @@ svg {
   right: 0;
   padding: 20px;
   background: linear-gradient(to top, rgba(0, 0, 0, 0.95) 0%, rgba(0, 0, 0, 0.7) 50%, transparent 100%);
-  opacity: 0;
+  opacity: 1;
   transition: opacity 0.3s ease;
 }
 
@@ -287,11 +293,12 @@ svg {
 }
 
 .movie-actions {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 12px;
   justify-content: center;
   margin: 18px auto 0;
-  max-width: 420px;
+  max-width: 560px;
 }
 
 .episode-empty {
@@ -367,11 +374,23 @@ svg {
   padding: 60px 4% 0;
 }
 
+.video-player {
+  margin: 0 auto 40px;
+  max-width: 430px;
+}
+
+.episode-actions {
+  display: grid;
+  justify-content: center;
+  margin: -10px auto 34px;
+  max-width: 430px;
+}
+
 .video-container {
   position: relative;
   width: 100%;
   max-width: 430px;
-  margin: 0 auto 40px;
+  margin: 0 auto;
   aspect-ratio: 9 / 16;
   background: #000;
   border: 1px solid rgba(255, 255, 255, 0.12);
@@ -462,6 +481,14 @@ svg {
   min-width: 0;
 }
 
+.video-hint {
+  color: var(--text-muted);
+  font-size: 0.84rem;
+  line-height: 1.35;
+  margin: 10px 4px 0;
+  text-align: center;
+}
+
 .photo-section {
   padding: 60px 4%;
   background: var(--bg-black);
@@ -480,7 +507,8 @@ svg {
 .photo-item {
   width: 100%;
   aspect-ratio: 9 / 16;
-  object-fit: cover;
+  background: #000;
+  object-fit: contain;
   border-radius: 4px;
   cursor: pointer;
   transition: transform 0.3s ease;
@@ -488,6 +516,15 @@ svg {
 
 .photo-item:hover {
   transform: scale(1.05);
+}
+
+.episode-nav {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin: 0 auto 70px;
+  max-width: 560px;
+  padding: 0 4%;
 }
 
 .credits-container {
@@ -502,17 +539,11 @@ svg {
 
 .credits-content {
   text-align: center;
-  animation: scrollUp 25s linear;
+  width: min(680px, 100%);
 }
 
-@keyframes scrollUp {
-  from {
-    transform: translateY(100vh);
-  }
-
-  to {
-    transform: translateY(-100%);
-  }
+.credits-content h1 {
+  margin: 0 0 60px;
 }
 
 .credit-line {
@@ -613,9 +644,19 @@ svg {
     padding-top: 36px;
   }
 
+  .movie-page {
+    padding-top: 82px;
+  }
+
+  .movie-actions,
+  .episode-actions,
+  .episode-nav {
+    grid-template-columns: 1fr;
+    max-width: 430px;
+  }
+
   .video-container {
     border-radius: 10px;
-    margin-bottom: 28px;
   }
 
   .video-controls {

@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { InfoIcon, PlayIcon } from './icons';
+import { assetUrl } from '../utils/assets';
 
 interface HeroProps {
   title: string;
@@ -9,7 +10,7 @@ interface HeroProps {
 
 export const Hero = ({ title, subtitle, heroImage }: HeroProps) => (
   <header className="hero" aria-label={title || 'Inicio'}>
-    <img className="hero-image" src={heroImage} alt="" loading="lazy" />
+    <img className="hero-image" src={assetUrl(heroImage)} alt="" loading="lazy" />
     <div className="hero-gradient" />
     <div className="hero-content">
       <h1>{title}</h1>
@@ -19,7 +20,7 @@ export const Hero = ({ title, subtitle, heroImage }: HeroProps) => (
           <PlayIcon /> Reproducir
         </Link>
         <Link className="btn-info" to="/browse">
-          <InfoIcon /> Más información
+          <InfoIcon /> Ver etapas
         </Link>
       </div>
     </div>

@@ -16,7 +16,11 @@ export const VideoPlayer = ({ src }: { src: string }) => {
     }
 
     if (video.paused) {
-      await video.play();
+      try {
+        await video.play();
+      } catch {
+        setIsPlaying(false);
+      }
     } else {
       video.pause();
     }
@@ -68,63 +72,66 @@ export const VideoPlayer = ({ src }: { src: string }) => {
   };
 
   return (
-    <div className="video-container">
-      <video
-        ref={videoRef}
-        src={src}
-        preload="metadata"
-        playsInline
-        onClick={togglePlay}
-        onLoadedMetadata={(event) => {
-          setDuration(event.currentTarget.duration || 0);
-          event.currentTarget.volume = volume;
-        }}
-        onPlay={() => setIsPlaying(true)}
-        onPause={() => setIsPlaying(false)}
-        onTimeUpdate={(event) => {
-          const video = event.currentTarget;
-          setCurrentTime(video.currentTime);
-        }}
-      />
-      {!isPlaying ? (
-        <button type="button" className="video-play-overlay" onClick={togglePlay} aria-label="Reproducir">
-          <PlayIcon />
-        </button>
-      ) : null}
-      <div className="video-controls" aria-label="Controles de video">
-        <button type="button" className="video-control-button" onClick={togglePlay} aria-label={isPlaying ? 'Pausar' : 'Reproducir'}>
-          {isPlaying ? <PauseIcon /> : <PlayIcon />}
-        </button>
-        <div className="video-timeline">
-          <input
-            type="range"
-            min="0"
-            max="100"
-            step="0.1"
-            value={progress}
-            onChange={(event) => seek(Number(event.target.value))}
-            aria-label="Avance del video"
-          />
-          <span>{formatTime(currentTime)} / {formatTime(duration)}</span>
-        </div>
-        <div className="volume-control">
-          <button type="button" className="video-control-button" onClick={toggleMute} aria-label={isMuted ? 'Activar sonido' : 'Silenciar'}>
-            {isMuted || volume === 0 ? <MutedIcon /> : <VolumeIcon />}
+    <div className="video-player">
+      <div className="video-container">
+        <video
+          ref={videoRef}
+          src={src}
+          preload="metadata"
+          playsInline
+          onClick={togglePlay}
+          onLoadedMetadata={(event) => {
+            setDuration(event.currentTarget.duration || 0);
+            event.currentTarget.volume = volume;
+          }}
+          onPlay={() => setIsPlaying(true)}
+          onPause={() => setIsPlaying(false)}
+          onTimeUpdate={(event) => {
+            const video = event.currentTarget;
+            setCurrentTime(video.currentTime);
+          }}
+        />
+        {!isPlaying ? (
+          <button type="button" className="video-play-overlay" onClick={togglePlay} aria-label="Reproducir">
+            <PlayIcon />
           </button>
-          <input
-            type="range"
-            min="0"
-            max="1"
-            step="0.05"
-            value={isMuted ? 0 : volume}
-            onChange={(event) => updateVolume(Number(event.target.value))}
-            aria-label="Volumen"
-          />
+        ) : null}
+        <div className="video-controls" aria-label="Controles de video">
+          <button type="button" className="video-control-button" onClick={togglePlay} aria-label={isPlaying ? 'Pausar' : 'Reproducir'}>
+            {isPlaying ? <PauseIcon /> : <PlayIcon />}
+          </button>
+          <div className="video-timeline">
+            <input
+              type="range"
+              min="0"
+              max="100"
+              step="0.1"
+              value={progress}
+              onChange={(event) => seek(Number(event.target.value))}
+              aria-label="Avance del video"
+            />
+            <span>{formatTime(currentTime)} / {formatTime(duration)}</span>
+          </div>
+          <div className="volume-control">
+            <button type="button" className="video-control-button" onClick={toggleMute} aria-label={isMuted ? 'Activar sonido' : 'Silenciar'}>
+              {isMuted || volume === 0 ? <MutedIcon /> : <VolumeIcon />}
+            </button>
+            <input
+              type="range"
+              min="0"
+              max="1"
+              step="0.05"
+              value={isMuted ? 0 : volume}
+              onChange={(event) => updateVolume(Number(event.target.value))}
+              aria-label="Volumen"
+            />
+          </div>
+          <button type="button" className="video-control-button" onClick={toggleFullscreen} aria-label="Pantalla completa">
+            <FullscreenIcon />
+          </button>
         </div>
-        <button type="button" className="video-control-button" onClick={toggleFullscreen} aria-label="Pantalla completa">
-          <FullscreenIcon />
-        </button>
       </div>
+      <p className="video-hint">Toca el video para reproducir. En iPhone, sube el volumen con los botones del celular.</p>
     </div>
   );
 };

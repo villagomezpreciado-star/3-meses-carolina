@@ -10,7 +10,7 @@ export default function Browse() {
     <>
       <Navbar />
       <main className="browse">
-        <h1 className="browse-title">¿Quién está mirando?</h1>
+        <h1 className="browse-title">Elige una etapa</h1>
         <div className="browse-grid">
           {data.episodes.map((episode) => (
             <EpisodeCard key={episode.id} episode={episode} />

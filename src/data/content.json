@@ -5,7 +5,7 @@
   "episodes": [
     {
       "id": 1,
-      "title": "Feliz navidad, quieres venir a six",
+      "title": "Feliz Navidad, ¿quieres venir a Six?",
       "subtitle": "No me lo esperaba",
       "dateRange": "25 dic - 13 feb",
       "thumbnail": "/assets/ep1/thumb.jpg",
@@ -36,7 +36,7 @@
       "subtitle": "First almost everything",
       "dateRange": "13 feb - 13 marzo",
       "thumbnail": "/assets/ep2/thumb.jpg",
-      "description": "Primera vez que te veia bien ya en persona, y superaste todas mis expectativas. Estaba lleno de nervios cuando te vi por primera vez.",
+      "description": "Primera vez que te veía bien ya en persona, y superaste todas mis expectativas. Estaba lleno de nervios cuando te vi por primera vez.",
       "photos": [
         "/assets/ep2/photos/001.jpg",
         "/assets/ep2/photos/002.jpg",
@@ -74,10 +74,10 @@
     {
       "id": 3,
       "title": "Corpus Christi",
-      "subtitle": "Dos dias y cero ganas de irme",
+      "subtitle": "Dos días y cero ganas de irme",
       "dateRange": "13 marzo - 5 abril",
       "thumbnail": "/assets/ep3/thumb.jpg",
-      "description": "Primera vez que fui y me encanto levantarme y que estes ahi. Esos dos dias estuvieron padrisimos.",
+      "description": "Primera vez que fui y me encantó levantarme y que estés ahí. Esos dos días estuvieron padrísimos.",
       "photos": [
         "/assets/ep3/photos/001.jpg",
         "/assets/ep3/photos/002.jpg",
@@ -108,7 +108,7 @@
       "subtitle": "Especial",
       "dateRange": "4 abril - 1 mayo",
       "thumbnail": "/assets/ep4/thumb.jpg",
-      "description": "Me hiciste sentir como la persona mas especial del mundo.",
+      "description": "Me hiciste sentir como la persona más especial del mundo.",
       "photos": [
         "/assets/ep4/photos/001.jpg",
         "/assets/ep4/photos/002.jpg",
@@ -146,7 +146,7 @@
     {
       "id": 5,
       "title": "Primera pelea",
-      "subtitle": "Cada dia me enamoro mas y mas de ti",
+      "subtitle": "Cada día me enamoro más y más de ti",
       "dateRange": "1 mayo - 15 mayo",
       "thumbnail": "/assets/ep5/thumb.jpg",
       "description": "Te amo infinito. Primeros 3 meses de muchos.",
@@ -192,7 +192,7 @@
   "credits": [
     {
       "role": "Director",
-      "name": "Tu novio jermoso"
+      "name": "Tu novio hermoso"
     },
     {
       "role": "Editor",
@@ -200,11 +200,11 @@
     },
     {
       "role": "Planeador",
-      "name": "Vicente Villagomez Preciado"
+      "name": "Vicente Villagómez Preciado"
     }
   ],
   "miniMovies": {
-    "openingLine": "Cada dia me enamoro mas",
+    "openingLine": "Cada día me enamoro más",
     "closingLine": "Y esto apenas va empezando.",
     "style": "Simple Netflix"
   }
