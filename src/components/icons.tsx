@@ -34,3 +34,16 @@ export const FullscreenIcon = () => (
     <path d="M5 5h6v2H7v4H5zm8 0h6v6h-2V7h-4zM7 13v4h4v2H5v-6zm12 0v6h-6v-2h4v-4z" />
   </svg>
 );
+
+export const VolumeIcon = () => (
+  <svg aria-hidden="true" viewBox="0 0 24 24" focusable="false">
+    <path d="M4 9v6h4l5 4V5L8 9zm12.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4" />
+    <path d="M14 3.2v2.1a7.5 7.5 0 0 1 0 13.4v2.1a9.5 9.5 0 0 0 0-17.6" />
+  </svg>
+);
+
+export const MutedIcon = () => (
+  <svg aria-hidden="true" viewBox="0 0 24 24" focusable="false">
+    <path d="M4 9v6h4l5 4V5L8 9zM19.8 9.6l-1.4-1.4-2.4 2.4-2.4-2.4-1.4 1.4 2.4 2.4-2.4 2.4 1.4 1.4 2.4-2.4 2.4 2.4 1.4-1.4-2.4-2.4z" />
+  </svg>
+);
