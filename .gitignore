@@ -4,6 +4,7 @@ dist/
 renders/
 final-renders/
 final-renders-audio*/
+final-renders-pro/
 AGENTS.md
 __pycache__/
 *.pyc
