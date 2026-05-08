@@ -9,7 +9,7 @@ from PIL import Image, ImageDraw, ImageFont
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE_ROOT = Path("/Users/tico/Downloads/proyecto_carolina/proyecto carolina meses")
 CONTENT_PATH = ROOT / "src" / "data" / "content.json"
-OUTPUT = ROOT / "final-renders-pro"
+OUTPUT = ROOT / "final-renders-pro-v2"
 PUBLIC_MOVIES = ROOT / "public" / "assets" / "mini-movies"
 MUSIC_PATH = Path("/Users/tico/Downloads/Taylor Swift - Out Of The Woods.mp3")
 FONT = "/System/Library/Fonts/Supplemental/Arial.ttf"
@@ -17,6 +17,8 @@ SECONDS_PER_PHOTO = 1.65
 MAX_VIDEO_SECONDS = 10
 PUBLIC_WIDTH = 720
 PUBLIC_HEIGHT = 1280
+PUBLIC_MAXRATE = "1600k"
+PUBLIC_BUFSIZE = "3200k"
 IMAGE_SUFFIXES = {".jpg", ".jpeg", ".png", ".webp", ".gif"}
 VIDEO_SUFFIXES = {".mp4", ".mov"}
 STAGES = {
@@ -25,6 +27,14 @@ STAGES = {
     3: "periodo3_feb15-mar15",
     4: "periodo4_mar15-abr15",
     5: "periodo5_abr15-may15",
+}
+
+STAGE_QUOTES = {
+    1: "De una invitación salió nuestra historia.",
+    2: "La primera vez que todo se sintió real.",
+    3: "Dos días, mil nervios y cero ganas de irme.",
+    4: "Me hiciste sentir como la persona más especial del mundo.",
+    5: "Incluso en lo difícil, te sigo escogiendo.",
 }
 
 
@@ -62,6 +72,23 @@ def card(path: Path, *, title: str, subtitle: str, dates: str, body: str, eyebro
     if body:
         text(draw, (60, 1596), wrap(body, 34), 34, "#ffffff", spacing=12)
     draw.line((60, 1438, 1020, 1438), fill="#282828", width=2)
+    image.save(path, "JPEG", quality=90)
+
+
+def quote_card(path: Path, *, episode: dict[str, str], quote: str) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    image = Image.new("RGB", (1080, 1920), "#050505")
+    draw = ImageDraw.Draw(image)
+    for y in range(1920):
+        shade = int(5 + (y / 1920) * 22)
+        draw.line((0, y, 1080, y), fill=(shade, shade, shade))
+    draw.rectangle((72, 292, 88, 716), fill="#e50914")
+    text(draw, (116, 292), "NUESTRA HISTORIA", 28, "#808080")
+    text(draw, (116, 370), wrap(quote, 18), 72, "#ffffff", spacing=8)
+    draw.line((116, 752, 880, 752), fill="#2a2a2a", width=2)
+    text(draw, (116, 812), wrap(episode["description"], 31), 36, "#d2d2d2", spacing=12)
+    text(draw, (116, 1516), episode["dateRange"].upper(), 30, "#808080")
+    text(draw, (116, 1580), episode["title"], 44, "#ffffff")
     image.save(path, "JPEG", quality=90)
 
 
@@ -127,17 +154,18 @@ def public_encode(source: Path, destination: Path) -> None:
     video_filter = (
         f"[0:v]scale={PUBLIC_WIDTH}:{PUBLIC_HEIGHT}:force_original_aspect_ratio=decrease,"
         f"pad={PUBLIC_WIDTH}:{PUBLIC_HEIGHT}:(ow-iw)/2:(oh-ih)/2:black,"
-        "setsar=1,format=yuv420p[v]"
+        "fps=30,setsar=1,format=yuv420p[v]"
     )
     command = ["ffmpeg", "-y", "-hide_banner", "-loglevel", "error", "-i", str(source)]
     if MUSIC_PATH.exists() and duration > 0:
         fade_start = max(0.0, duration - 2.5)
         command += ["-stream_loop", "-1", "-i", str(MUSIC_PATH)]
         audio_filter = (
-            "[0:a]volume=1.35[a0];"
+            "[0:a]volume=1.18,aformat=sample_rates=44100:channel_layouts=stereo[a0];"
             f"[1:a]atrim=0:{duration},asetpts=PTS-STARTPTS,volume=0.13,"
             f"afade=t=in:st=0:d=1.2,afade=t=out:st={fade_start}:d=2.5[music];"
-            "[a0][music]amix=inputs=2:duration=first:dropout_transition=2,volume=1.0[a]"
+            "[a0][music]amix=inputs=2:duration=first:dropout_transition=2,"
+            "alimiter=limit=0.92,aresample=async=1:first_pts=0[a]"
         )
         command += ["-filter_complex", f"{video_filter};{audio_filter}", "-map", "[v]", "-map", "[a]"]
     else:
@@ -148,7 +176,19 @@ def public_encode(source: Path, destination: Path) -> None:
         "-preset",
         "medium",
         "-crf",
-        "29",
+        "30",
+        "-maxrate",
+        PUBLIC_MAXRATE,
+        "-bufsize",
+        PUBLIC_BUFSIZE,
+        "-profile:v",
+        "main",
+        "-level",
+        "3.1",
+        "-r",
+        "30",
+        "-g",
+        "60",
         "-c:a",
         "aac",
         "-ar",
@@ -157,6 +197,8 @@ def public_encode(source: Path, destination: Path) -> None:
         "2",
         "-b:a",
         "128k",
+        "-avoid_negative_ts",
+        "make_zero",
         "-movflags",
         "+faststart",
         str(destination),
@@ -273,7 +315,9 @@ def main() -> None:
         cards = OUTPUT / "cards"
         intro = cards / f"etapa-{stage}-intro.jpg"
         final = cards / f"etapa-{stage}-final.jpg"
+        quote = cards / f"etapa-{stage}-quote.jpg"
         card(intro, title=episode["title"], subtitle=episode["subtitle"], dates=episode["dateRange"], body="", eyebrow=opening)
+        quote_card(quote, episode=episode, quote=STAGE_QUOTES.get(stage, episode["subtitle"]))
         card(
             final,
             title=episode["title"],
@@ -285,14 +329,20 @@ def main() -> None:
 
         segments: list[Path] = []
         intro_segment = stage_dir / "000-intro.mp4"
-        render_segment(intro, intro_segment, duration=3)
+        render_segment(intro, intro_segment, duration=3.2)
         segments.append(intro_segment)
-        for index, item in enumerate(media_for_stage(stage), start=1):
+        media_items = media_for_stage(stage)
+        middle_index = max(1, len(media_items) // 2)
+        for index, item in enumerate(media_items, start=1):
             segment = stage_dir / f"{index:03}-{item.stem[:44]}.mp4"
             if render_segment(item, segment, duration=SECONDS_PER_PHOTO):
                 segments.append(segment)
+            if index == middle_index:
+                quote_segment = stage_dir / "500-story-text.mp4"
+                render_segment(quote, quote_segment, duration=3.4)
+                segments.append(quote_segment)
         final_segment = stage_dir / "999-final.mp4"
-        render_segment(final, final_segment, duration=4.5)
+        render_segment(final, final_segment, duration=4.8)
         segments.append(final_segment)
 
         stage_output = OUTPUT / f"etapa-{stage}.mp4"
