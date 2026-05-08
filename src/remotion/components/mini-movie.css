@@ -1,0 +1,130 @@
+.mini-movie {
+  background: #141414;
+  color: #fff;
+  font-family: "Helvetica Neue", Arial, sans-serif;
+  overflow: hidden;
+}
+
+.mini-movie__blur,
+.mini-movie__image {
+  height: 100%;
+  inset: 0;
+  object-fit: cover;
+  position: absolute;
+  width: 100%;
+}
+
+.mini-movie__blur {
+  filter: blur(34px);
+  opacity: 0.36;
+  transform: scale(1.18);
+}
+
+.mini-movie__image {
+  object-position: center;
+}
+
+.mini-movie__shade {
+  background:
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.38), rgba(0, 0, 0, 0.12) 45%, rgba(0, 0, 0, 0.82)),
+    linear-gradient(to right, rgba(0, 0, 0, 0.42), rgba(0, 0, 0, 0.1));
+}
+
+.mini-movie__netflix {
+  color: #e50914;
+  font-size: 54px;
+  font-weight: 900;
+  left: 68px;
+  letter-spacing: -1px;
+  position: absolute;
+  top: 72px;
+}
+
+.mini-movie__intro {
+  bottom: 230px;
+  left: 68px;
+  position: absolute;
+  right: 68px;
+}
+
+.mini-movie__opening {
+  color: #d2d2d2;
+  font-size: 36px;
+  font-weight: 600;
+  line-height: 1.25;
+  margin: 0 0 24px;
+}
+
+.mini-movie h1 {
+  font-size: 92px;
+  font-weight: 800;
+  letter-spacing: -1px;
+  line-height: 0.96;
+  margin: 0 0 24px;
+  max-width: 920px;
+}
+
+.mini-movie h2 {
+  color: #fff;
+  font-size: 46px;
+  font-weight: 700;
+  line-height: 1.12;
+  margin: 0 0 34px;
+}
+
+.mini-movie__episode-title {
+  left: 68px;
+  position: absolute;
+  right: 68px;
+  top: 150px;
+}
+
+.mini-movie__episode-title strong {
+  display: block;
+  font-size: 46px;
+  font-weight: 900;
+  line-height: 1;
+  margin-bottom: 12px;
+}
+
+.mini-movie__episode-title span {
+  color: #808080;
+  display: block;
+  font-size: 25px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.mini-movie__description {
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.82), rgba(0, 0, 0, 0));
+  bottom: 0;
+  color: #d2d2d2;
+  font-size: 36px;
+  font-weight: 500;
+  line-height: 1.35;
+  margin: 0;
+  padding: 260px 68px 210px;
+  position: absolute;
+  width: 100%;
+}
+
+.mini-movie__counter {
+  bottom: 92px;
+  color: #fff;
+  font-size: 28px;
+  font-weight: 900;
+  letter-spacing: 2px;
+  position: absolute;
+  right: 68px;
+}
+
+.mini-movie__closing {
+  bottom: 92px;
+  color: #fff;
+  font-size: 42px;
+  font-weight: 800;
+  left: 68px;
+  position: absolute;
+  right: 68px;
+}
