@@ -11,6 +11,7 @@ SOURCE_ROOT = Path("/Users/tico/Downloads/proyecto_carolina/proyecto carolina me
 CONTENT_PATH = ROOT / "src" / "data" / "content.json"
 OUTPUT = ROOT / "final-renders-pro"
 PUBLIC_MOVIES = ROOT / "public" / "assets" / "mini-movies"
+MUSIC_PATH = Path("/Users/tico/Downloads/Taylor Swift - Out Of The Woods.mp3")
 FONT = "/System/Library/Fonts/Supplemental/Arial.ttf"
 SECONDS_PER_PHOTO = 1.65
 MAX_VIDEO_SECONDS = 10
@@ -122,38 +123,45 @@ def has_audio(path: Path) -> bool:
 
 def public_encode(source: Path, destination: Path) -> None:
     destination.parent.mkdir(parents=True, exist_ok=True)
-    subprocess.run(
-        [
-            "ffmpeg",
-            "-y",
-            "-hide_banner",
-            "-loglevel",
-            "error",
-            "-i",
-            str(source),
-            "-vf",
-            f"scale={PUBLIC_WIDTH}:{PUBLIC_HEIGHT}:force_original_aspect_ratio=decrease,"
-            f"pad={PUBLIC_WIDTH}:{PUBLIC_HEIGHT}:(ow-iw)/2:(oh-ih)/2:black,setsar=1,format=yuv420p",
-            "-c:v",
-            "libx264",
-            "-preset",
-            "medium",
-            "-crf",
-            "29",
-            "-c:a",
-            "aac",
-            "-ar",
-            "44100",
-            "-ac",
-            "2",
-            "-b:a",
-            "112k",
-            "-movflags",
-            "+faststart",
-            str(destination),
-        ],
-        check=True,
+    duration = video_duration(source) or 0
+    video_filter = (
+        f"[0:v]scale={PUBLIC_WIDTH}:{PUBLIC_HEIGHT}:force_original_aspect_ratio=decrease,"
+        f"pad={PUBLIC_WIDTH}:{PUBLIC_HEIGHT}:(ow-iw)/2:(oh-ih)/2:black,"
+        "setsar=1,format=yuv420p[v]"
     )
+    command = ["ffmpeg", "-y", "-hide_banner", "-loglevel", "error", "-i", str(source)]
+    if MUSIC_PATH.exists() and duration > 0:
+        fade_start = max(0.0, duration - 2.5)
+        command += ["-stream_loop", "-1", "-i", str(MUSIC_PATH)]
+        audio_filter = (
+            "[0:a]volume=1.35[a0];"
+            f"[1:a]atrim=0:{duration},asetpts=PTS-STARTPTS,volume=0.13,"
+            f"afade=t=in:st=0:d=1.2,afade=t=out:st={fade_start}:d=2.5[music];"
+            "[a0][music]amix=inputs=2:duration=first:dropout_transition=2,volume=1.0[a]"
+        )
+        command += ["-filter_complex", f"{video_filter};{audio_filter}", "-map", "[v]", "-map", "[a]"]
+    else:
+        command += ["-filter_complex", video_filter, "-map", "[v]", "-map", "0:a:0"]
+    command += [
+        "-c:v",
+        "libx264",
+        "-preset",
+        "medium",
+        "-crf",
+        "29",
+        "-c:a",
+        "aac",
+        "-ar",
+        "44100",
+        "-ac",
+        "2",
+        "-b:a",
+        "128k",
+        "-movflags",
+        "+faststart",
+        str(destination),
+    ]
+    subprocess.run(command, check=True)
 
 
 def render_segment(source: Path, destination: Path, *, duration: float | None = None) -> bool:
