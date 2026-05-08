@@ -196,69 +196,57 @@ svg {
 
 .profiles-page {
   min-height: 100svh;
-  background: radial-gradient(circle at top, #242424 0%, #141414 36%, #0a0a0a 100%);
+  background: #141414;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding: 34px 4% 52px;
-}
-
-.profiles-logo {
-  color: var(--accent-red);
-  font-size: clamp(1.8rem, 4vw, 3rem);
-  font-weight: 800;
-  left: 4%;
-  letter-spacing: -0.03em;
-  position: fixed;
-  top: 34px;
-  z-index: 2;
+  padding: 42px 4% 56px;
 }
 
 .profiles-panel {
   margin: 0 auto;
-  max-width: 1120px;
+  max-width: 1180px;
   text-align: center;
   width: 100%;
 }
 
-.profiles-kicker {
-  color: var(--text-muted);
-  font-size: 1rem;
-  letter-spacing: 0.24em;
-  margin: 0 0 12px;
-  text-transform: uppercase;
-}
-
 .profiles-panel h1 {
-  font-size: clamp(2rem, 5vw, 4.2rem);
+  color: #fff;
+  font-size: clamp(2.4rem, 5vw, 4.4rem);
+  font-weight: 400;
   letter-spacing: 0;
-  margin: 0 0 48px;
+  line-height: 1.05;
+  margin: 0 0 46px;
 }
 
 .profiles-grid {
-  display: grid;
-  gap: clamp(18px, 3vw, 34px);
-  grid-template-columns: repeat(5, minmax(120px, 1fr));
+  align-items: start;
+  display: flex;
+  gap: clamp(20px, 2.3vw, 34px);
+  justify-content: center;
+  margin: 0 auto;
+  max-width: 1060px;
 }
 
 .profile-card {
   color: var(--text-muted);
   display: grid;
-  gap: 12px;
+  gap: 10px;
   justify-items: center;
   min-width: 0;
   text-decoration: none;
+  width: 150px;
 }
 
 .profile-avatar {
   aspect-ratio: 1;
-  background: #222;
+  background: #2a2a2a;
   border: 4px solid transparent;
-  border-radius: 8px;
+  border-radius: 5px;
   display: block;
   overflow: hidden;
   transition: border-color 0.2s ease, transform 0.2s ease;
-  width: min(100%, 185px);
+  width: 150px;
 }
 
 .profile-avatar img {
@@ -270,24 +258,27 @@ svg {
 }
 
 .profile-name {
-  color: var(--text-secondary);
+  color: #8c8c8c;
   display: block;
-  font-size: clamp(0.9rem, 1.5vw, 1.15rem);
-  font-weight: 600;
+  font-size: 1.12rem;
+  font-weight: 500;
   line-height: 1.2;
-  max-width: 180px;
-  min-height: 2.4em;
+  max-width: 150px;
+  min-height: 1.25em;
 }
 
-.profile-date {
-  color: var(--text-muted);
-  font-size: 0.82rem;
+.profile-subname {
+  color: #686868;
+  display: block;
+  font-size: 0.72rem;
+  line-height: 1.15;
+  max-width: 150px;
+  min-height: 2.3em;
 }
 
 .profile-card:hover .profile-avatar,
 .profile-card:focus-visible .profile-avatar {
   border-color: #fff;
-  transform: scale(1.04);
 }
 
 .profile-card:hover .profile-name,
@@ -295,27 +286,66 @@ svg {
   color: #fff;
 }
 
+.profile-card:hover .profile-subname,
+.profile-card:focus-visible .profile-subname {
+  color: #a8a8a8;
+}
+
 .profile-card:focus-visible {
   outline: none;
 }
 
-.profiles-movie-link {
+.profile-add-avatar {
+  align-items: center;
+  background: transparent;
+  border-color: transparent;
+  display: flex;
+  justify-content: center;
+}
+
+.profile-add-avatar span {
+  align-items: center;
+  background: #808080;
+  border-radius: 50%;
+  color: #141414;
+  display: flex;
+  font-size: 5rem;
+  font-weight: 600;
+  height: 90px;
+  justify-content: center;
+  line-height: 1;
+  width: 90px;
+}
+
+.profile-card-add:hover .profile-add-avatar,
+.profile-card-add:focus-visible .profile-add-avatar {
+  border-color: transparent;
+}
+
+.profile-card-add:hover .profile-add-avatar span,
+.profile-card-add:focus-visible .profile-add-avatar span {
+  background: #fff;
+}
+
+.profiles-manage {
   border: 1px solid #6f6f6f;
-  color: var(--text-secondary);
+  color: #8c8c8c;
   display: inline-flex;
   font-size: 1rem;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  margin-top: 52px;
+  font-weight: 500;
+  justify-content: center;
+  letter-spacing: 0.16em;
+  margin-top: 56px;
   min-height: 44px;
-  padding: 12px 24px;
+  min-width: 278px;
+  padding: 12px 26px;
   text-decoration: none;
   text-transform: uppercase;
   transition: border-color 0.2s ease, color 0.2s ease;
 }
 
-.profiles-movie-link:hover,
-.profiles-movie-link:focus-visible {
+.profiles-manage:hover,
+.profiles-manage:focus-visible {
   border-color: #fff;
   color: #fff;
   outline: none;
@@ -730,32 +760,31 @@ svg {
 
   .profiles-page {
     justify-content: flex-start;
-    padding: 94px 5% 44px;
-  }
-
-  .profiles-logo {
-    font-size: 1.65rem;
-    top: 24px;
+    padding: 86px 5% 44px;
   }
 
   .profiles-panel h1 {
-    margin-bottom: 30px;
+    margin-bottom: 34px;
   }
 
   .profiles-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 150px));
+    justify-content: center;
     row-gap: 26px;
   }
 
+  .profile-card {
+    width: 100%;
+  }
+
   .profile-avatar {
-    border-radius: 6px;
     width: min(100%, 150px);
   }
 
-  .profiles-movie-link {
-    margin-top: 38px;
+  .profiles-manage {
+    margin-top: 42px;
     width: 100%;
-    justify-content: center;
   }
 
   .browse {
