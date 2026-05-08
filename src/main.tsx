@@ -1,6 +1,6 @@
 import React, { Suspense, lazy } from 'react';
 import ReactDOM from 'react-dom/client';
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { HashRouter, Route, Routes } from 'react-router-dom';
 import './styles/global.css';
 
 const Home = lazy(() => import('./pages/Home'));
@@ -11,7 +11,7 @@ const CreditsPage = lazy(() => import('./pages/CreditsPage'));
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
-    <BrowserRouter>
+    <HashRouter>
       <Suspense fallback={<div className="route-loading" aria-label="Cargando" />}>
         <Routes>
           <Route path="/" element={<Home />} />
@@ -21,6 +21,6 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
           <Route path="/credits" element={<CreditsPage />} />
         </Routes>
       </Suspense>
-    </BrowserRouter>
+    </HashRouter>
   </React.StrictMode>
 );
