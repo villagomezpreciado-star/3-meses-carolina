@@ -9,7 +9,7 @@ from PIL import Image, ImageDraw, ImageFont
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE_ROOT = Path("/Users/tico/Downloads/proyecto_carolina/proyecto carolina meses")
 CONTENT_PATH = ROOT / "src" / "data" / "content.json"
-OUTPUT = ROOT / "final-renders-pro-v3"
+OUTPUT = ROOT / "final-renders-pro-v4"
 PUBLIC_MOVIES = ROOT / "public" / "assets" / "mini-movies"
 STAGE_MUSIC = {
     1: Path("/Users/tico/Downloads/Taylor Swift - Out Of The Woods.mp3"),
@@ -66,6 +66,38 @@ POV_TEXT = {
     },
 }
 
+STAGE_CAPTIONS = {
+    1: [
+        "No me lo esperaba.",
+        "Pero fue lo mejor que me pudo haber pasado.",
+        "Me cambiaste la vida.",
+        "Aprovechamos este tiempo para realmente conocernos.",
+    ],
+    2: [
+        "Primera vez que te veía bien en persona.",
+        "Superaste todas mis expectativas.",
+        "Estaba lleno de nervios cuando te vi.",
+        "Ahí entendí que esto era real.",
+    ],
+    3: [
+        "Primera vez que fui a Corpus.",
+        "Me encantó levantarme y que estuvieras ahí.",
+        "Esos dos días estuvieron padrísimos.",
+        "No quería que se acabara.",
+    ],
+    4: [
+        "Me hiciste sentir como la persona más especial del mundo.",
+        "Ese día se quedó guardado en mí.",
+        "Gracias por hacerme sentir tan querido.",
+    ],
+    5: [
+        "Te amo infinito.",
+        "Cada día me enamoro más y más de ti.",
+        "Primeros 3 meses de muchos.",
+        "Incluso en lo difícil, te sigo escogiendo.",
+    ],
+}
+
 
 def font(size: int) -> ImageFont.FreeTypeFont:
     return ImageFont.truetype(FONT, size=size)
@@ -77,6 +109,32 @@ def wrap(value: str, width: int = 31) -> str:
 
 def text(draw: ImageDraw.ImageDraw, xy: tuple[int, int], value: str, size: int, fill: str, spacing: int = 12) -> None:
     draw.multiline_text(xy, value, font=font(size), fill=fill, spacing=spacing)
+
+
+def caption_overlay(path: Path, caption: str) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    image = Image.new("RGBA", (1080, 1920), (0, 0, 0, 0))
+    draw = ImageDraw.Draw(image)
+    wrapped = wrap(caption, 28)
+    bbox = draw.multiline_textbbox((0, 0), wrapped, font=font(46), spacing=10)
+    text_width = bbox[2] - bbox[0]
+    text_height = bbox[3] - bbox[1]
+    padding_x = 42
+    padding_y = 30
+    box_width = min(960, text_width + padding_x * 2)
+    box_height = text_height + padding_y * 2
+    x = (1080 - box_width) // 2
+    y = 1490
+    draw.rounded_rectangle((x, y, x + box_width, y + box_height), radius=26, fill=(0, 0, 0, 176))
+    draw.multiline_text(
+        (x + padding_x, y + padding_y - 4),
+        wrapped,
+        font=font(46),
+        fill=(255, 255, 255, 255),
+        spacing=10,
+        align="center",
+    )
+    image.save(path)
 
 
 def card(path: Path, *, title: str, subtitle: str, dates: str, body: str, eyebrow: str) -> None:
@@ -252,7 +310,7 @@ def public_encode(source: Path, destination: Path, *, music_path: Path | None = 
     subprocess.run(command, check=True)
 
 
-def render_segment(source: Path, destination: Path, *, duration: float | None = None) -> bool:
+def render_segment(source: Path, destination: Path, *, duration: float | None = None, caption: str | None = None) -> bool:
     if destination.exists() and destination.stat().st_size > 0:
         return True
     is_image = source.suffix.lower() in IMAGE_SUFFIXES
@@ -272,10 +330,15 @@ def render_segment(source: Path, destination: Path, *, duration: float | None = 
         segment_duration = min(video_duration(source) or MAX_VIDEO_SECONDS, MAX_VIDEO_SECONDS)
         command += ["-t", str(segment_duration)]
     command += ["-i", str(source), "-f", "lavfi", "-t", str(segment_duration), "-i", "anullsrc=channel_layout=stereo:sample_rate=44100"]
+    caption_path = None
+    if caption:
+        caption_path = destination.with_suffix(".caption.png")
+        caption_overlay(caption_path, caption)
+        command += ["-loop", "1", "-t", str(segment_duration), "-i", str(caption_path)]
     audio_source = "0:a:0" if (not is_image and has_audio(source)) else "1:a:0"
     out_fade_start = max(0.0, segment_duration - 0.22)
     audio_fade_start = max(0.0, segment_duration - 0.25)
-    filter_graph = (
+    base_video = (
         "[0:v]split=2[bg][fg];"
         "[bg]scale=1080:1920:force_original_aspect_ratio=increase,"
         "crop=1080:1920,gblur=sigma=36,eq=brightness=-0.20:saturation=0.86[bg];"
@@ -283,9 +346,16 @@ def render_segment(source: Path, destination: Path, *, duration: float | None = 
         "eq=contrast=1.05:saturation=1.08[fg];"
         "[bg][fg]overlay=(W-w)/2:(H-h)/2,"
         "noise=alls=3:allf=t+u,"
-        f"fade=t=in:st=0:d=0.18,fade=t=out:st={out_fade_start}:d=0.22,"
-        "fps=30,setsar=1,format=yuv420p[out];"
-        f"[{audio_source}]aformat=sample_rates=44100:channel_layouts=stereo,"
+        f"fade=t=in:st=0:d=0.18,fade=t=out:st={out_fade_start}:d=0.22[base];"
+    )
+    if caption_path:
+        video_chain = "[2:v]format=rgba[cap];[base][cap]overlay=0:0,fps=30,setsar=1,format=yuv420p[out];"
+    else:
+        video_chain = "[base]fps=30,setsar=1,format=yuv420p[out];"
+    filter_graph = (
+        base_video
+        + video_chain
+        + f"[{audio_source}]aformat=sample_rates=44100:channel_layouts=stereo,"
         f"afade=t=in:st=0:d=0.12,afade=t=out:st={audio_fade_start}:d=0.25[aout]"
     )
     command += [
@@ -415,9 +485,11 @@ def main() -> None:
         segments.append(pov_segment)
         media_items = media_for_stage(stage)
         middle_index = max(1, len(media_items) // 2)
+        captions = STAGE_CAPTIONS.get(stage, [episode["description"]])
         for index, item in enumerate(media_items, start=1):
             segment = stage_dir / f"{index:03}-{item.stem[:44]}.mp4"
-            if render_segment(item, segment, duration=SECONDS_PER_PHOTO):
+            caption = captions[(index - 1) % len(captions)]
+            if render_segment(item, segment, duration=SECONDS_PER_PHOTO, caption=caption):
                 segments.append(segment)
             if index == middle_index:
                 quote_segment = stage_dir / "500-story-text.mp4"
