@@ -9,7 +9,7 @@ from PIL import Image, ImageDraw, ImageFont
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE_ROOT = Path("/Users/tico/Downloads/proyecto_carolina/proyecto carolina meses")
 CONTENT_PATH = ROOT / "src" / "data" / "content.json"
-OUTPUT = ROOT / "final-renders-pro-v4"
+OUTPUT = ROOT / "final-renders-pro-v5"
 PUBLIC_MOVIES = ROOT / "public" / "assets" / "mini-movies"
 STAGE_MUSIC = {
     1: Path("/Users/tico/Downloads/Taylor Swift - Out Of The Woods.mp3"),
@@ -488,7 +488,7 @@ def main() -> None:
         captions = STAGE_CAPTIONS.get(stage, [episode["description"]])
         for index, item in enumerate(media_items, start=1):
             segment = stage_dir / f"{index:03}-{item.stem[:44]}.mp4"
-            caption = captions[(index - 1) % len(captions)]
+            caption = captions[index - 1] if index <= len(captions) else None
             if render_segment(item, segment, duration=SECONDS_PER_PHOTO, caption=caption):
                 segments.append(segment)
             if index == middle_index:

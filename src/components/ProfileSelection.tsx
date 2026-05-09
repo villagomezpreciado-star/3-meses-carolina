@@ -3,11 +3,11 @@ import type { Content } from '../types';
 import { assetUrl } from '../utils/assets';
 
 const PROFILE_IMAGES: Record<number, string> = {
-  1: '/assets/profiles/etapa-1.jpg',
-  2: '/assets/profiles/etapa-2.jpg',
-  3: '/assets/profiles/etapa-3.jpg',
-  4: '/assets/profiles/etapa-4.jpg',
-  5: '/assets/profiles/etapa-5.jpg',
+  1: '/assets/profiles/etapa-1-final.jpg',
+  2: '/assets/profiles/etapa-2-final.jpg',
+  3: '/assets/profiles/etapa-3-final.jpg',
+  4: '/assets/profiles/etapa-4-final.jpg',
+  5: '/assets/profiles/etapa-5-final.jpg',
 };
 
 const profileImageFor = (episode: Content['episodes'][number], index: number) => {
