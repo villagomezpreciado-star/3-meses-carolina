@@ -9,7 +9,7 @@ from PIL import Image, ImageDraw, ImageFont
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE_ROOT = Path("/Users/tico/Downloads/proyecto_carolina/proyecto carolina meses")
 CONTENT_PATH = ROOT / "src" / "data" / "content.json"
-OUTPUT = ROOT / "final-renders-pro-v5"
+OUTPUT = ROOT / "final-renders-pro-v6"
 PUBLIC_MOVIES = ROOT / "public" / "assets" / "mini-movies"
 STAGE_MUSIC = {
     1: Path("/Users/tico/Downloads/Taylor Swift - Out Of The Woods.mp3"),
@@ -20,7 +20,6 @@ STAGE_MUSIC = {
 }
 FONT = "/System/Library/Fonts/Supplemental/Arial.ttf"
 SECONDS_PER_PHOTO = 1.65
-MAX_VIDEO_SECONDS = 10
 PUBLIC_WIDTH = 720
 PUBLIC_HEIGHT = 1280
 PUBLIC_MAXRATE = "1600k"
@@ -327,7 +326,7 @@ def render_segment(source: Path, destination: Path, *, duration: float | None = 
     elif is_gif:
         command += ["-t", str(segment_duration)]
     else:
-        segment_duration = min(video_duration(source) or MAX_VIDEO_SECONDS, MAX_VIDEO_SECONDS)
+        segment_duration = video_duration(source) or SECONDS_PER_PHOTO
         command += ["-t", str(segment_duration)]
     command += ["-i", str(source), "-f", "lavfi", "-t", str(segment_duration), "-i", "anullsrc=channel_layout=stereo:sample_rate=44100"]
     caption_path = None
@@ -514,9 +513,8 @@ def main() -> None:
     render_segment(credits, credits_segment, duration=7)
     public_encode(credits_segment, credits_public, music_path=STAGE_MUSIC.get(5))
 
-    complete = OUTPUT / "3-meses-completo.mp4"
-    concat(stage_outputs + [credits_segment], complete, reencode=True)
-    concat(public_stage_outputs + [credits_public], PUBLIC_MOVIES / "3-meses-completo.mp4", reencode=True)
+    complete = PUBLIC_MOVIES / "3-meses-completo.mp4"
+    concat(public_stage_outputs + [credits_public], complete, reencode=True)
     print(complete)
 
 
