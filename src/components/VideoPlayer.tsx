@@ -77,7 +77,7 @@ export const VideoPlayer = ({ src }: { src: string }) => {
         <video
           ref={videoRef}
           src={src}
-          preload="auto"
+          preload="none"
           playsInline
           onClick={togglePlay}
           onLoadedMetadata={(event) => {

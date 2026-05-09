@@ -893,3 +893,61 @@ svg {
     font-size: 2rem;
   }
 }
+
+/* ── Remotion movie section ───────────────────────── */
+.remotion-movie-section {
+  padding: 48px 5vw 32px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.remotion-movie-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.remotion-movie-icon {
+  font-size: 1.4rem;
+}
+
+.remotion-movie-title {
+  font-size: 1.35rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+  letter-spacing: 0.02em;
+}
+
+.remotion-movie-wrapper {
+  display: flex;
+  justify-content: center;
+}
+
+.remotion-movie-wrapper .video-player {
+  max-width: 380px;
+  width: 100%;
+}
+
+.remotion-movie-wrapper .video-container {
+  aspect-ratio: 9 / 16;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 12px 48px rgba(0,0,0,0.7);
+}
+
+.remotion-movie-wrapper video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+@media (max-width: 600px) {
+  .remotion-movie-section {
+    padding: 32px 4vw 20px;
+  }
+  .remotion-movie-wrapper .video-player {
+    max-width: 100%;
+  }
+}

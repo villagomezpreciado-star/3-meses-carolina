@@ -9,7 +9,7 @@ from PIL import Image, ImageDraw, ImageFont
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE_ROOT = Path("/Users/tico/Downloads/proyecto_carolina/proyecto carolina meses")
 CONTENT_PATH = ROOT / "src" / "data" / "content.json"
-OUTPUT = ROOT / "final-renders-pro-v6"
+OUTPUT = ROOT / "final-renders-pro-v7"
 PUBLIC_MOVIES = ROOT / "public" / "assets" / "mini-movies"
 STAGE_MUSIC = {
     1: Path("/Users/tico/Downloads/Taylor Swift - Out Of The Woods.mp3"),
@@ -35,68 +35,101 @@ STAGES = {
 }
 
 STAGE_QUOTES = {
-    1: "De una invitación salió nuestra historia.",
-    2: "La primera vez que todo se sintió real.",
-    3: "Dos días, mil nervios y cero ganas de irme.",
-    4: "Me hiciste sentir como la persona más especial del mundo.",
-    5: "Incluso en lo difícil, te sigo escogiendo.",
+    1: "Four Years in the Making",
+    2: "FaceTime at Midnight",
+    3: "Peckers & Conversaciones Reales",
+    4: "Mi Cumpleaños, Su Magia",
+    5: "Para Siempre, Empezando Hoy",
 }
 
 POV_TEXT = {
     1: {
-        "title": "Mi POV de la historia",
-        "body": "Todo empezó con una invitación que no esperaba. Sin darme cuenta, ahí empezó algo que me cambió la vida.",
+        "title": "El inicio de todo",
+        "body": "Ya la conocía desde antes. Me gustaba desde hacía cuatro años, y el 25 de diciembre por fin me animé a invitarla.",
     },
     2: {
-        "title": "Mi POV de verte en persona",
-        "body": "Estaba nervioso, pero cuando te vi todo se sintió real. Superaste cualquier expectativa que yo tenía.",
+        "title": "La decisión",
+        "body": "Cuando fui a recogerla estaba nerviosísimo. Cuando la vi, lo primero que hice fue cargarla, y todo cambió.",
     },
     3: {
-        "title": "Mi POV de Corpus",
-        "body": "Despertarme y saber que estabas ahí hizo que esos días se sintieran como una película.",
+        "title": "Cuando todo se volvió real",
+        "body": "El día que le pedí que fuera mi novia sentí alivio. No salió exactamente como lo planeé, pero fue real.",
     },
     4: {
-        "title": "Mi POV de mi cumpleaños",
-        "body": "Me hiciste sentir cuidado, querido y especial de una forma que nunca voy a olvidar.",
+        "title": "Nadie lo había hecho",
+        "body": "Ella hizo que mi cumpleaños importara. Me sentí especial, vulnerable y muy feliz.",
     },
     5: {
-        "title": "Mi POV de nosotros",
-        "body": "Aunque no todo sea perfecto, cada día confirmo que te amo más y que quiero seguir eligiéndote.",
+        "title": "Lo que viene",
+        "body": "Verla en su prom, feliz y siendo ella, me recordó que sigo enamoradísimo desde diciembre.",
     },
 }
 
 STAGE_CAPTIONS = {
     1: [
-        "No me lo esperaba.",
-        "Pero fue lo mejor que me pudo haber pasado.",
-        "Me cambiaste la vida.",
-        "Aprovechamos este tiempo para realmente conocernos.",
+        "Su hermana era la mejor amiga de mi hermana.",
+        "Ya la conocía desde antes; me gustaba desde hacía cuatro años.",
+        "Llegué a una fiesta, la vi y dije: esa maestra me encanta, está hermosa.",
+        "No sabía que su hermana estaba escuchando todo.",
+        "Cuatro años después la invité al antro, el 25 de diciembre.",
+        "Me la pasé increíble y al día siguiente la invité a una date.",
+        "Desde ahí no paramos de hablar.",
+        "En Cali me preguntó si tenía ADHD; me di cuenta de que me ponía mucha atención.",
+        "Le dije que íbamos a caminar a Calzada y ella llevó hoodie blanca, pero no zapatos para caminar.",
+        "En el parque dije que no quería besarla para no embolarme más... no funcionó.",
+        "Esa noche no pude dormir pensando cómo iba a hacer que esto funcionara.",
+        "Ya no me veía con nadie más.",
     ],
     2: [
-        "Primera vez que te veía bien en persona.",
-        "Superaste todas mis expectativas.",
-        "Estaba lleno de nervios cuando te vi.",
-        "Ahí entendí que esto era real.",
+        "Supe que la amaba desde que la vi después de empezar a hablar en serio.",
+        "Fui a recogerla a su casa nerviosísimo, porque sabía que iba a cambiar todo.",
+        "Cuando la vi, lo primero que hice fue cargarla.",
+        "Nos quedamos hablando como si el tiempo no existiera.",
+        "En el antro, en vez de estar con mis amigos, me salí para marcarle por FaceTime.",
+        "Hablé con ella como una hora hasta que me dijo: ya vete con tus amigos.",
+        "En el cumpleaños de Diego le dije a Dani: yo voy a andar con ella.",
+        "La busqué por todo el antro para marcarle y hablé con ella hora y media.",
+        "Bailamos una canción de The Greatest Showman en mi casa.",
+        "Dijimos que queríamos ver la película y terminamos sin verla.",
+        "En el parque traía tacones y le cargué bastante tiempo para que ya no caminara.",
     ],
     3: [
-        "Primera vez que fui a Corpus.",
-        "Me encantó levantarme y que estuvieras ahí.",
-        "Esos dos días estuvieron padrísimos.",
-        "No quería que se acabara.",
+        "El día que le pedí que fuera mi novia sentí relief.",
+        "Quería que todo quedara perfecto.",
+        "Fuimos a misa cristiana y después a misa católica.",
+        "Tenía todo planeado, pero terminamos haciendo otro plan.",
+        "Lo importante fue la plática madura que tuvimos después en los tacos.",
+        "No había restaurantes abiertos cuando le pedí que fuera mi novia.",
+        "Esa conversación me ayudó a entender todo.",
+        "Recordó que mi restaurante favorito era Peckers y me pidió cenar de ahí.",
+        "Ese detalle pequeño significó mucho.",
+        "Me mandó un video cantando karaoke con sus amigas en Spring Break.",
+        "Verla siendo ella misma me dio mucha risa y ternura.",
     ],
     4: [
-        "Me hiciste sentir como la persona más especial del mundo.",
-        "Ese día se quedó guardado en mí.",
-        "Gracias por hacerme sentir tan querido.",
+        "Fui a visitarla por mi cumpleaños.",
+        "Mis cumpleaños normalmente no me interesan tanto.",
+        "Pero ella me hizo sentir especial.",
+        "Fue un momento muy, muy feliz.",
+        "Me sentí vulnerable porque nadie había mostrado tanta dedicación por mí.",
+        "No la había visto como en un mes.",
+        "Desde que la vi, no pude quitar mis ojos de ella.",
+        "Intentó hacerme hamburguesas y les puso un aceite bien raro.",
+        "Sabían horrible, pero yo me las iba a tragar en paz.",
+        "Ella misma se dio cuenta y las tiramos juntos.",
+        "Ahí vi que alguien realmente se preocupaba por mí de esa manera.",
     ],
     5: [
-        "Te amo infinito.",
-        "Cada día me enamoro más y más de ti.",
-        "Primeros 3 meses de muchos.",
-        "Incluso en lo difícil, te sigo escogiendo.",
+        "El día de su prom me hizo sonreír muchísimo.",
+        "Verla feliz con sus amigas, en otro entorno, siendo completamente ella.",
+        "Nada de lo que siento por ella ha cambiado desde diciembre.",
+        "Sigo enamoradísimo.",
+        "Me sorprende lo fuerte y adaptable que es.",
+        "Se adapta a todo y trabaja duro a pesar de todo lo que le ha pasado.",
+        "Es una persona increíble.",
+        "Para siempre, empezando hoy.",
     ],
 }
-
 
 def font(size: int) -> ImageFont.FreeTypeFont:
     return ImageFont.truetype(FONT, size=size)

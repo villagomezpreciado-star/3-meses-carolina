@@ -5,11 +5,11 @@
   "episodes": [
     {
       "id": 1,
-      "title": "Feliz Navidad, ¿quieres venir a Six?",
-      "subtitle": "No me lo esperaba",
-      "dateRange": "25 dic - 13 feb",
+      "title": "Four Years in the Making",
+      "subtitle": "El inicio de todo",
+      "dateRange": "25 dic - 25 ene",
       "thumbnail": "/assets/ep1/thumb.jpg",
-      "description": "No me lo esperaba, pero es lo mejor que me pudo haber pasado. Me cambiaste la vida y aprovechamos este tiempo para realmente conocernos.",
+      "description": "Todo empezó porque su hermana era la mejor amiga de mi hermana. Ya la conocía desde antes; me gustaba desde hacía cuatro años. Cuatro años después, decidí invitarla al antro el 25 de diciembre. Me la pasé increíble. Al día siguiente la invité a una date, y desde ahí no paramos de hablar.",
       "photos": [
         "/assets/ep1/photos/001.jpg",
         "/assets/ep1/photos/002.jpg",
@@ -32,11 +32,11 @@
     },
     {
       "id": 2,
-      "title": "IRL",
-      "subtitle": "First almost everything",
-      "dateRange": "13 feb - 13 marzo",
+      "title": "FaceTime at Midnight",
+      "subtitle": "La decisión",
+      "dateRange": "25 ene - 15 feb",
       "thumbnail": "/assets/ep2/thumb.jpg",
-      "description": "Primera vez que te veía bien ya en persona, y superaste todas mis expectativas. Estaba lleno de nervios cuando te vi por primera vez.",
+      "description": "Supe que la amaba desde que la vi después de que empezamos a hablar en serio. Cuando fui a recogerla a su casa, estaba nerviosísimo. Cuando la vi, lo primero que hice fue cargarla, y nos quedamos hablando como si el tiempo no existiera.",
       "photos": [
         "/assets/ep2/photos/001.jpg",
         "/assets/ep2/photos/002.jpg",
@@ -73,11 +73,11 @@
     },
     {
       "id": 3,
-      "title": "Corpus Christi",
-      "subtitle": "Dos días y cero ganas de irme",
-      "dateRange": "13 marzo - 5 abril",
+      "title": "Peckers & Conversaciones Reales",
+      "subtitle": "Cuando todo se volvió real",
+      "dateRange": "15 feb - 15 marzo",
       "thumbnail": "/assets/ep3/thumb.jpg",
-      "description": "Primera vez que fui y me encantó levantarme y que estés ahí. Esos dos días estuvieron padrísimos.",
+      "description": "El día que le pedí que fuera mi novia, lo primero que sentí fue alivio. Quería que todo quedara perfecto. Lo que realmente importó fue la plática madura que tuvimos después en los tacos, porque esa conversación me ayudó a entender todo.",
       "photos": [
         "/assets/ep3/photos/001.jpg",
         "/assets/ep3/photos/002.jpg",
@@ -104,11 +104,11 @@
     },
     {
       "id": 4,
-      "title": "Mi cumpleaños",
-      "subtitle": "Especial",
-      "dateRange": "4 abril - 1 mayo",
+      "title": "Mi Cumpleaños, Su Magia",
+      "subtitle": "Nadie lo había hecho",
+      "dateRange": "15 marzo - 15 abril",
       "thumbnail": "/assets/ep4/thumb.jpg",
-      "description": "Me hiciste sentir como la persona más especial del mundo.",
+      "description": "El recuerdo que más destaca fue cuando fui a visitarla por mi cumpleaños. Mis cumpleaños normalmente no me interesan tanto, pero ella me hizo sentir especial. Me sentí vulnerable porque nadie había mostrado tanta dedicación ni interés por mí.",
       "photos": [
         "/assets/ep4/photos/001.jpg",
         "/assets/ep4/photos/002.jpg",
@@ -145,11 +145,11 @@
     },
     {
       "id": 5,
-      "title": "Primera pelea",
-      "subtitle": "Cada día me enamoro más y más de ti",
-      "dateRange": "1 mayo - 15 mayo",
+      "title": "Para Siempre, Empezando Hoy",
+      "subtitle": "Lo que viene",
+      "dateRange": "15 abril - 15 mayo",
       "thumbnail": "/assets/ep5/thumb.jpg",
-      "description": "Te amo infinito. Primeros 3 meses de muchos.",
+      "description": "El día de su prom me hizo sonreír muchísimo. Verla tan feliz con sus amigas, siendo completamente ella, me recordó que no ha cambiado nada desde diciembre: sigo enamoradísimo. Lo que más me sorprende es lo fuerte, adaptable y trabajadora que es.",
       "photos": [
         "/assets/ep5/photos/001.jpg",
         "/assets/ep5/photos/002.jpg",
@@ -204,8 +204,8 @@
     }
   ],
   "miniMovies": {
-    "openingLine": "Cada día me enamoro más",
-    "closingLine": "Y esto apenas va empezando.",
+    "openingLine": "Nuestra historia",
+    "closingLine": "Y esto apenas empieza.",
     "style": "Simple Netflix"
   }
 }
