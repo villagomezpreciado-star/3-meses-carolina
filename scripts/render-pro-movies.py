@@ -9,7 +9,7 @@ from PIL import Image, ImageDraw, ImageFont
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE_ROOT = Path("/Users/tico/Downloads/proyecto_carolina/proyecto carolina meses")
 CONTENT_PATH = ROOT / "src" / "data" / "content.json"
-OUTPUT = ROOT / "final-renders-pro-v2"
+OUTPUT = ROOT / "final-renders-pro-v3"
 PUBLIC_MOVIES = ROOT / "public" / "assets" / "mini-movies"
 STAGE_MUSIC = {
     1: Path("/Users/tico/Downloads/Taylor Swift - Out Of The Woods.mp3"),
@@ -41,6 +41,29 @@ STAGE_QUOTES = {
     3: "Dos días, mil nervios y cero ganas de irme.",
     4: "Me hiciste sentir como la persona más especial del mundo.",
     5: "Incluso en lo difícil, te sigo escogiendo.",
+}
+
+POV_TEXT = {
+    1: {
+        "title": "Mi POV de la historia",
+        "body": "Todo empezó con una invitación que no esperaba. Sin darme cuenta, ahí empezó algo que me cambió la vida.",
+    },
+    2: {
+        "title": "Mi POV de verte en persona",
+        "body": "Estaba nervioso, pero cuando te vi todo se sintió real. Superaste cualquier expectativa que yo tenía.",
+    },
+    3: {
+        "title": "Mi POV de Corpus",
+        "body": "Despertarme y saber que estabas ahí hizo que esos días se sintieran como una película.",
+    },
+    4: {
+        "title": "Mi POV de mi cumpleaños",
+        "body": "Me hiciste sentir cuidado, querido y especial de una forma que nunca voy a olvidar.",
+    },
+    5: {
+        "title": "Mi POV de nosotros",
+        "body": "Aunque no todo sea perfecto, cada día confirmo que te amo más y que quiero seguir eligiéndote.",
+    },
 }
 
 
@@ -95,6 +118,22 @@ def quote_card(path: Path, *, episode: dict[str, str], quote: str) -> None:
     text(draw, (116, 812), wrap(episode["description"], 31), 36, "#d2d2d2", spacing=12)
     text(draw, (116, 1516), episode["dateRange"].upper(), 30, "#808080")
     text(draw, (116, 1580), episode["title"], 44, "#ffffff")
+    image.save(path, "JPEG", quality=90)
+
+
+def pov_card(path: Path, *, title: str, body: str, episode: dict[str, str]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    image = Image.new("RGB", (1080, 1920), "#070707")
+    draw = ImageDraw.Draw(image)
+    draw.rectangle((0, 0, 1080, 1920), fill="#070707")
+    draw.rectangle((0, 0, 1080, 1920), outline="#111111", width=32)
+    draw.text((60, 64), "NETFLIX", font=font(54), fill="#e50914")
+    text(draw, (80, 470), "MI POV", 34, "#808080")
+    text(draw, (80, 548), wrap(title, 18), 78, "#ffffff", spacing=8)
+    draw.line((80, 828, 1000, 828), fill="#2b2b2b", width=2)
+    text(draw, (80, 910), wrap(body, 28), 44, "#f2f2f2", spacing=14)
+    text(draw, (80, 1484), episode["dateRange"].upper(), 28, "#808080")
+    text(draw, (80, 1548), wrap(episode["title"], 24), 40, "#d2d2d2")
     image.save(path, "JPEG", quality=90)
 
 
@@ -167,11 +206,12 @@ def public_encode(source: Path, destination: Path, *, music_path: Path | None = 
         fade_start = max(0.0, duration - 2.5)
         command += ["-stream_loop", "-1", "-i", str(music_path)]
         audio_filter = (
-            "[0:a]volume=1.18,aformat=sample_rates=44100:channel_layouts=stereo[a0];"
-            f"[1:a]atrim=0:{duration},asetpts=PTS-STARTPTS,volume=0.13,"
+            "[0:a]aresample=async=1000:first_pts=0,volume=1.12,"
+            "aformat=sample_rates=44100:channel_layouts=stereo[a0];"
+            f"[1:a]aresample=async=1000:first_pts=0,atrim=0:{duration},asetpts=PTS-STARTPTS,volume=0.10,"
             f"afade=t=in:st=0:d=1.2,afade=t=out:st={fade_start}:d=2.5[music];"
             "[a0][music]amix=inputs=2:duration=first:dropout_transition=2,"
-            "alimiter=limit=0.92,aresample=async=1:first_pts=0[a]"
+            "alimiter=limit=0.90,aresample=async=1000:first_pts=0[a]"
         )
         command += ["-filter_complex", f"{video_filter};{audio_filter}", "-map", "[v]", "-map", "[a]"]
     else:
@@ -280,30 +320,59 @@ def render_segment(source: Path, destination: Path, *, duration: float | None = 
     return True
 
 
-def concat(segments: list[Path], output: Path) -> None:
+def concat(segments: list[Path], output: Path, *, reencode: bool = False) -> None:
     with tempfile.NamedTemporaryFile("w", suffix=".txt", delete=False) as list_file:
         for segment in segments:
             list_file.write(f"file '{segment.as_posix()}'\n")
         list_path = Path(list_file.name)
-    subprocess.run(
-        [
-            "ffmpeg",
-            "-y",
-            "-hide_banner",
-            "-loglevel",
-            "error",
-            "-f",
-            "concat",
-            "-safe",
-            "0",
-            "-i",
-            str(list_path),
-            "-c",
-            "copy",
-            str(output),
-        ],
-        check=True,
-    )
+    command = [
+        "ffmpeg",
+        "-y",
+        "-hide_banner",
+        "-loglevel",
+        "error",
+        "-fflags",
+        "+genpts",
+        "-f",
+        "concat",
+        "-safe",
+        "0",
+        "-i",
+        str(list_path),
+    ]
+    if reencode:
+        command += [
+            "-vf",
+            "fps=30,setsar=1,format=yuv420p",
+            "-af",
+            "aresample=async=1000:first_pts=0,aformat=sample_rates=44100:channel_layouts=stereo",
+            "-c:v",
+            "libx264",
+            "-preset",
+            "veryfast",
+            "-crf",
+            "23",
+            "-r",
+            "30",
+            "-g",
+            "60",
+            "-c:a",
+            "aac",
+            "-ar",
+            "44100",
+            "-ac",
+            "2",
+            "-b:a",
+            "128k",
+            "-avoid_negative_ts",
+            "make_zero",
+            "-movflags",
+            "+faststart",
+        ]
+    else:
+        command += ["-c", "copy"]
+    command.append(str(output))
+    subprocess.run(command, check=True)
     list_path.unlink(missing_ok=True)
 
 
@@ -323,8 +392,11 @@ def main() -> None:
         intro = cards / f"etapa-{stage}-intro.jpg"
         final = cards / f"etapa-{stage}-final.jpg"
         quote = cards / f"etapa-{stage}-quote.jpg"
+        pov = cards / f"etapa-{stage}-pov.jpg"
         card(intro, title=episode["title"], subtitle=episode["subtitle"], dates=episode["dateRange"], body="", eyebrow=opening)
         quote_card(quote, episode=episode, quote=STAGE_QUOTES.get(stage, episode["subtitle"]))
+        pov_copy = POV_TEXT.get(stage, {"title": "Mi POV de la historia", "body": episode["description"]})
+        pov_card(pov, title=pov_copy["title"], body=pov_copy["body"], episode=episode)
         card(
             final,
             title=episode["title"],
@@ -338,6 +410,9 @@ def main() -> None:
         intro_segment = stage_dir / "000-intro.mp4"
         render_segment(intro, intro_segment, duration=3.2)
         segments.append(intro_segment)
+        pov_segment = stage_dir / "001-pov.mp4"
+        render_segment(pov, pov_segment, duration=4.2)
+        segments.append(pov_segment)
         media_items = media_for_stage(stage)
         middle_index = max(1, len(media_items) // 2)
         for index, item in enumerate(media_items, start=1):
@@ -353,7 +428,7 @@ def main() -> None:
         segments.append(final_segment)
 
         stage_output = OUTPUT / f"etapa-{stage}.mp4"
-        concat(segments, stage_output)
+        concat(segments, stage_output, reencode=True)
         public_stage_output = PUBLIC_MOVIES / f"etapa-{stage}.mp4"
         public_encode(stage_output, public_stage_output, music_path=STAGE_MUSIC.get(stage))
         stage_outputs.append(stage_output)
@@ -368,8 +443,8 @@ def main() -> None:
     public_encode(credits_segment, credits_public, music_path=STAGE_MUSIC.get(5))
 
     complete = OUTPUT / "3-meses-completo.mp4"
-    concat(stage_outputs + [credits_segment], complete)
-    concat(public_stage_outputs + [credits_public], PUBLIC_MOVIES / "3-meses-completo.mp4")
+    concat(stage_outputs + [credits_segment], complete, reencode=True)
+    concat(public_stage_outputs + [credits_public], PUBLIC_MOVIES / "3-meses-completo.mp4", reencode=True)
     print(complete)
 
 
