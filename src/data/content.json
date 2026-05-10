@@ -31,7 +31,8 @@
       ],
       "song": "assets/music/ep1.mp3",
       "songTitle": "Out of the Woods",
-      "songArtist": "Taylor Swift"
+      "songArtist": "Taylor Swift",
+      "movie": "assets/remotion/etapa-1.mp4"
     },
     {
       "id": 2,
@@ -75,7 +76,8 @@
       ],
       "song": "assets/music/ep2.mp3",
       "songTitle": "Just the Way You Are",
-      "songArtist": "Bruno Mars"
+      "songArtist": "Bruno Mars",
+      "movie": "assets/remotion/etapa-2.mp4"
     },
     {
       "id": 3,
@@ -109,7 +111,8 @@
       ],
       "song": "assets/music/ep3.mp3",
       "songTitle": "Steal My Girl",
-      "songArtist": "One Direction"
+      "songArtist": "One Direction",
+      "movie": "assets/remotion/etapa-3.mp4"
     },
     {
       "id": 4,
@@ -153,7 +156,8 @@
       ],
       "song": "assets/music/ep4.mp3",
       "songTitle": "Deeply Still in Love",
-      "songArtist": "Role Model"
+      "songArtist": "Role Model",
+      "movie": "assets/remotion/etapa-4.mp4"
     },
     {
       "id": 5,
@@ -201,7 +205,8 @@
       ],
       "song": "assets/music/ep5.mp3",
       "songTitle": "Marry You",
-      "songArtist": "Bruno Mars"
+      "songArtist": "Bruno Mars",
+      "movie": "assets/remotion/etapa-5.mp4"
     }
   ],
   "credits": [
