@@ -1,0 +1,1 @@
+import{j as s,L as r}from"./index-2BGF1CgC.js";import{C as i}from"./icons-CDuq2EAC.js";const t=({label:a="Volver",to:o="/browse"})=>s.jsxs(r,{className:"back-link",to:o,"aria-label":a,children:[s.jsx(i,{}),s.jsx("span",{children:a})]});export{t as N};
