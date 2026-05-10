@@ -13,6 +13,7 @@ export interface Episode {
   photos: string[];
   videos: string[];
   movie?: string;
+  intro?: string;
   song?: string;
   songTitle?: string;
   songArtist?: string;

@@ -1241,3 +1241,98 @@ svg {
     justify-content: center;
   }
 }
+
+/* ─── Love Edit featured section ──────────────────────────────────── */
+.love-intro {
+  width: 100%;
+  max-width: 760px;
+  background: #000;
+  overflow: hidden;
+}
+
+.love-intro__video {
+  width: 100%;
+  display: block;
+  object-fit: cover;
+}
+
+.love-edit-section {
+  width: 100%;
+  max-width: 520px;
+  padding: 0 0 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.love-edit-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 18px;
+  margin-bottom: 16px;
+  border-radius: 50px;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  background: linear-gradient(135deg, #ff2d55, #ff6b6b, #ff9a9a);
+  color: #fff;
+  box-shadow: 0 0 18px rgba(255,45,85,0.55);
+  animation: badge-pulse 2.5s ease-in-out infinite;
+}
+
+@keyframes badge-pulse {
+  0%, 100% { box-shadow: 0 0 18px rgba(255,45,85,0.55); }
+  50%       { box-shadow: 0 0 32px rgba(255,45,85,0.85); }
+}
+
+.love-edit-glow {
+  width: 100%;
+  max-width: 420px;
+  border-radius: 20px;
+  padding: 3px;
+  background: linear-gradient(135deg, #ff2d55, #a855f7, #3b82f6, #ff2d55);
+  background-size: 300% 300%;
+  animation: gradient-spin 4s linear infinite;
+  box-shadow:
+    0 0 40px rgba(255,45,85,0.4),
+    0 0 80px rgba(168,85,247,0.2);
+}
+
+@keyframes gradient-spin {
+  0%   { background-position: 0%   50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0%   50%; }
+}
+
+.love-edit-glow .video-player {
+  margin: 0;
+  max-width: 100%;
+}
+
+.love-edit-glow .video-container {
+  border-radius: 18px;
+  aspect-ratio: 9 / 16;
+  border: none;
+  box-shadow: none;
+}
+
+.love-edit-glow .video-hint {
+  display: none;
+}
+
+/* Raw clips secondary section */
+.watch-stage--secondary {
+  padding-top: 8px;
+}
+
+.watch-stage__label {
+  text-align: center;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin: 0 0 12px;
+}
