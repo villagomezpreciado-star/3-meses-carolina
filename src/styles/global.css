@@ -563,6 +563,7 @@ svg {
   width: 100%;
   max-width: 430px;
   margin: 0 auto;
+  aspect-ratio: 9 / 16;
   background: #000;
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 14px;
@@ -572,9 +573,9 @@ svg {
 
 .video-container video {
   width: 100%;
-  height: auto;
-  display: block;
+  height: 100%;
   object-fit: contain;
+  display: block;
 }
 
 .video-play-overlay {
@@ -1289,18 +1290,13 @@ svg {
   max-width: 420px;
   border-radius: 20px;
   padding: 3px;
-  background: linear-gradient(135deg, #ff2d55, #a855f7, #3b82f6, #ff2d55);
-  background-size: 300% 300%;
-  animation: gradient-spin 4s linear infinite;
-  box-shadow:
-    0 0 40px rgba(255,45,85,0.4),
-    0 0 80px rgba(168,85,247,0.2);
+  background: linear-gradient(135deg, #ff2d55, #a855f7, #3b82f6);
+  animation: glow-pulse 3s ease-in-out infinite;
 }
 
-@keyframes gradient-spin {
-  0%   { background-position: 0%   50%; }
-  50%  { background-position: 100% 50%; }
-  100% { background-position: 0%   50%; }
+@keyframes glow-pulse {
+  0%, 100% { opacity: 1;    box-shadow: 0 0 32px rgba(255,45,85,0.45); }
+  50%       { opacity: 0.85; box-shadow: 0 0 56px rgba(168,85,247,0.65); }
 }
 
 .love-edit-glow .video-player {
