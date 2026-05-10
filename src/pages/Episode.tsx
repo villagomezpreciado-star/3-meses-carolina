@@ -97,9 +97,6 @@ export default function Episode() {
       {/* ── FEATURED: Remotion love edit ── */}
       {episode.movie ? (
         <section className="love-edit-section" aria-label="Love Edit">
-          <div className="love-edit-badge">
-            <span>❤️</span> Love Edit
-          </div>
           <div className="love-edit-glow">
             <VideoPlayer
               src={assetUrl(episode.movie)}
