@@ -1,7 +1,5 @@
 import { Link, useParams } from 'react-router-dom';
 import content from '../data/content.json';
-import { Navigation } from '../components/Navigation';
-import { PhotoGallery } from '../components/PhotoGallery';
 import { VideoPlayer } from '../components/VideoPlayer';
 import type { Content } from '../types';
 import { assetUrl } from '../utils/assets';
@@ -14,12 +12,11 @@ export default function Episode() {
 
   if (!episode) {
     return (
-      <main className="episode-page episode-empty">
-        <Navigation />
-        <h1>Episodio no encontrado</h1>
-        <Link className="btn-play" to="/browse">
-          Volver
+      <main className="watch-page watch-page--empty">
+        <Link className="watch-back" to="/browse" aria-label="Volver">
+          <span>&#8592;</span> Volver
         </Link>
+        <h1>Episodio no encontrado</h1>
       </main>
     );
   }
@@ -29,44 +26,37 @@ export default function Episode() {
   const nextEpisode = data.episodes[currentIndex + 1];
 
   return (
-    <main className="episode-page">
-      <Navigation />
-      <section className="episode-hero">
-        <img src={assetUrl(episode.thumbnail)} alt="" loading="lazy" />
-        <div className="episode-hero-gradient" />
-        <div className="episode-hero-content">
-          <p className="episode-kicker">{episode.dateRange}</p>
-          <h1>{episode.title}</h1>
-          {episode.subtitle ? <h2>{episode.subtitle}</h2> : null}
-          {episode.description ? <p>{episode.description}</p> : null}
-        </div>
-      </section>
-      <section className="video-section" aria-label="Videos">
+    <main className="watch-page">
+      <Link className="watch-back" to="/browse" aria-label="Volver">
+        <span aria-hidden="true">&#8592;</span> Episodios
+      </Link>
+
+      <div className="watch-meta">
+        <p className="watch-meta__kicker">{episode.dateRange}</p>
+        <h1 className="watch-meta__title">{episode.title}</h1>
+        {episode.subtitle ? <p className="watch-meta__subtitle">{episode.subtitle}</p> : null}
+        {episode.description ? <p className="watch-meta__desc">{episode.description}</p> : null}
+      </div>
+
+      <section className="watch-stage" aria-label="Episodio">
         {episode.videos.map((video) => (
           <VideoPlayer key={video} src={assetUrl(video)} />
         ))}
-        <div className="episode-actions">
-          <a className="btn-play" href={assetUrl(episode.videos[0])} download>
-            Descargar etapa
-          </a>
-        </div>
       </section>
-      <PhotoGallery photos={episode.photos} />
-      <nav className="episode-nav" aria-label="Navegación entre etapas">
+
+      <nav className="watch-nav" aria-label="Navegación entre etapas">
         {previousEpisode ? (
-          <Link className="btn-info" to={`/episode/${previousEpisode.id}`}>
-            Etapa anterior
+          <Link className="watch-nav__btn" to={`/episode/${previousEpisode.id}`}>
+            ← Etapa anterior
           </Link>
-        ) : (
-          <span />
-        )}
+        ) : <span />}
         {nextEpisode ? (
-          <Link className="btn-info" to={`/episode/${nextEpisode.id}`}>
-            Siguiente etapa
+          <Link className="watch-nav__btn watch-nav__btn--next" to={`/episode/${nextEpisode.id}`}>
+            Siguiente etapa →
           </Link>
         ) : (
-          <Link className="btn-info" to="/movie">
-            Ver película completa
+          <Link className="watch-nav__btn watch-nav__btn--next" to="/movie">
+            Ver película completa →
           </Link>
         )}
       </nav>
