@@ -69,7 +69,7 @@ STAGE_CAPTIONS = {
     1: [
         "Su hermana era la mejor amiga de mi hermana.",
         "Ya la conocía desde antes; me gustaba desde hacía cuatro años.",
-        "Llegué a una fiesta, la vi y dije: esa maestra me encanta, está hermosa.",
+        "Llegué a una fiesta, la vi y dije: esa niña me encanta, está hermosa.",
         "No sabía que su hermana estaba escuchando todo.",
         "Cuatro años después la invité al antro, el 25 de diciembre.",
         "Me la pasé increíble y al día siguiente la invité a una date.",
