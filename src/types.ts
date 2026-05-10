@@ -12,6 +12,10 @@ export interface Episode {
   description: string;
   photos: string[];
   videos: string[];
+  movie?: string;
+  song?: string;
+  songTitle?: string;
+  songArtist?: string;
 }
 
 export interface Content {

@@ -1,7 +1,13 @@
 import { useRef, useState } from 'react';
 import { FullscreenIcon, MutedIcon, PauseIcon, PlayIcon, VolumeIcon } from './icons';
 
-export const VideoPlayer = ({ src }: { src: string }) => {
+interface VideoPlayerProps {
+  src: string;
+  onPlay?: () => void;
+  onPause?: () => void;
+}
+
+export const VideoPlayer = ({ src, onPlay, onPause }: VideoPlayerProps) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
@@ -11,9 +17,7 @@ export const VideoPlayer = ({ src }: { src: string }) => {
 
   const togglePlay = async () => {
     const video = videoRef.current;
-    if (!video) {
-      return;
-    }
+    if (!video) return;
 
     if (video.paused) {
       try {
@@ -57,9 +61,7 @@ export const VideoPlayer = ({ src }: { src: string }) => {
 
   const seek = (value: number) => {
     const video = videoRef.current;
-    if (!video || !duration) {
-      return;
-    }
+    if (!video || !duration) return;
     video.currentTime = (value / 100) * duration;
     setCurrentTime(video.currentTime);
   };
@@ -84,8 +86,18 @@ export const VideoPlayer = ({ src }: { src: string }) => {
             setDuration(event.currentTarget.duration || 0);
             event.currentTarget.volume = volume;
           }}
-          onPlay={() => setIsPlaying(true)}
-          onPause={() => setIsPlaying(false)}
+          onPlay={() => {
+            setIsPlaying(true);
+            onPlay?.();
+          }}
+          onPause={() => {
+            setIsPlaying(false);
+            onPause?.();
+          }}
+          onEnded={() => {
+            setIsPlaying(false);
+            onPause?.();
+          }}
           onTimeUpdate={(event) => {
             const video = event.currentTarget;
             setCurrentTime(video.currentTime);
