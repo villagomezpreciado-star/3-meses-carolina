@@ -1,9 +1,7 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import content from '../data/content.json';
-import { NowPlaying } from '../components/NowPlaying';
 import { VideoPlayer } from '../components/VideoPlayer';
-import { useEpisodeAudio } from '../hooks/useEpisodeAudio';
 import type { Content } from '../types';
 import { assetUrl } from '../utils/assets';
 
@@ -13,13 +11,8 @@ export default function Episode() {
   const { id } = useParams();
   const episode = data.episodes.find((item) => item.id === Number(id));
 
-  const [activeVideos, setActiveVideos]     = useState(0);
-  const [showNowPlaying, setShowNowPlaying] = useState(true);
-  const [introPlayed, setIntroPlayed]       = useState(false);
+  const [introPlayed, setIntroPlayed] = useState(false);
   const introRef = useRef<HTMLVideoElement>(null);
-
-  const songSrc = episode?.song ? assetUrl(episode.song) : undefined;
-  const { duck, restore } = useEpisodeAudio(songSrc);
 
   // Auto-play intro clip on mount
   useEffect(() => {
@@ -27,20 +20,6 @@ export default function Episode() {
     if (!v) return;
     v.play().catch(() => {});
   }, []);
-
-  const handleVideoPlay = useCallback(() => {
-    duck();
-    setShowNowPlaying(false);
-    setActiveVideos((n) => n + 1);
-  }, [duck]);
-
-  const handleVideoPause = useCallback(() => {
-    setActiveVideos((n) => {
-      const next = Math.max(0, n - 1);
-      if (next === 0) restore();
-      return next;
-    });
-  }, [restore]);
 
   if (!episode) {
     return (
@@ -57,14 +36,6 @@ export default function Episode() {
 
   return (
     <main className="watch-page">
-      {episode.songTitle && episode.songArtist ? (
-        <NowPlaying
-          title={episode.songTitle}
-          artist={episode.songArtist}
-          visible={showNowPlaying && activeVideos === 0}
-        />
-      ) : null}
-
       <Link className="watch-back" to="/browse">← Episodios</Link>
 
       {/* ── Intro clip (autoplay, muted, loops once) ── */}
@@ -94,15 +65,11 @@ export default function Episode() {
         ) : null}
       </div>
 
-      {/* ── FEATURED: Remotion love edit ── */}
+      {/* ── FEATURED: Remotion love edit (audio integrado en el video) ── */}
       {episode.movie ? (
         <section className="love-edit-section" aria-label="Love Edit">
           <div className="love-edit-glow">
-            <VideoPlayer
-              src={assetUrl(episode.movie)}
-              onPlay={handleVideoPlay}
-              onPause={handleVideoPause}
-            />
+            <VideoPlayer src={assetUrl(episode.movie)} />
           </div>
         </section>
       ) : null}
@@ -115,8 +82,6 @@ export default function Episode() {
             <VideoPlayer
               key={video}
               src={assetUrl(video)}
-              onPlay={handleVideoPlay}
-              onPause={handleVideoPause}
             />
           ))}
         </section>
