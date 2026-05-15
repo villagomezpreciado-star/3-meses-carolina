@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#050505" />
+    <title>3 meses</title>
+    <style>
+      :root {
+        --red: #e50914;
+        --text: #fff;
+        --muted: rgba(255,255,255,0.72);
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        min-height: 100svh;
+        background: #050505;
+        color: var(--text);
+        font-family: "Helvetica Neue", Arial, sans-serif;
+        -webkit-font-smoothing: antialiased;
+      }
+      .bg {
+        position: fixed;
+        inset: 0;
+        background:
+          linear-gradient(90deg, rgba(0,0,0,.94), rgba(0,0,0,.78) 42%, rgba(0,0,0,.52)),
+          linear-gradient(180deg, rgba(0,0,0,.25), #050505 90%),
+          url("./assets/hero.jpg") center / cover no-repeat;
+        opacity: .72;
+      }
+      header {
+        position: fixed;
+        inset: 0 0 auto;
+        z-index: 2;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: max(24px, env(safe-area-inset-top)) 5vw 18px;
+      }
+      .logo {
+        color: var(--red);
+        font-size: clamp(1.7rem, 6vw, 3rem);
+        font-weight: 900;
+        letter-spacing: -.04em;
+      }
+      .home {
+        color: #fff;
+        text-decoration: none;
+        font-weight: 700;
+        padding: 10px 16px;
+        border-radius: 4px;
+        background: rgba(255,255,255,.12);
+        border: 1px solid rgba(255,255,255,.14);
+      }
+      main {
+        position: relative;
+        z-index: 1;
+        min-height: 100svh;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(280px, 430px);
+        align-items: center;
+        gap: clamp(28px, 5vw, 72px);
+        padding: 112px 5vw 56px;
+      }
+      .copy { max-width: 680px; }
+      .kicker {
+        color: var(--red);
+        font-size: .95rem;
+        font-weight: 800;
+        letter-spacing: .14em;
+        margin: 0 0 14px;
+        text-transform: uppercase;
+      }
+      h1 {
+        font-size: clamp(3.2rem, 9vw, 7rem);
+        line-height: .92;
+        margin: 0 0 18px;
+      }
+      p {
+        max-width: 520px;
+        margin: 0 0 28px;
+        color: var(--muted);
+        font-size: clamp(1rem, 2vw, 1.3rem);
+        line-height: 1.45;
+      }
+      .play {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 52px;
+        padding: 0 24px;
+        border-radius: 4px;
+        background: #fff;
+        color: #000;
+        font-size: 1.08rem;
+        font-weight: 800;
+        text-decoration: none;
+      }
+      .player {
+        width: min(100%, 430px);
+        justify-self: center;
+      }
+      video {
+        display: block;
+        width: 100%;
+        aspect-ratio: 9 / 16;
+        object-fit: contain;
+        background: #000;
+        border-radius: 10px;
+        border: 1px solid rgba(255,255,255,.12);
+        box-shadow: 0 30px 90px rgba(0,0,0,.72);
+      }
+      @media (max-width: 720px) {
+        header { padding-left: 20px; padding-right: 20px; }
+        main {
+          grid-template-columns: 1fr;
+          align-items: start;
+          padding: 92px 20px 40px;
+        }
+        h1 { font-size: 3rem; }
+        p { font-size: 1rem; margin-bottom: 18px; }
+        .player { width: min(100%, 390px); }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="bg" aria-hidden="true"></div>
+    <header>
+      <div class="logo">NETFLIX</div>
+      <a class="home" href="./">Perfiles</a>
+    </header>
+    <main>
+      <section class="copy">
+        <p class="kicker">Película especial</p>
+        <h1>3 meses</h1>
+        <p>La versión limpia: sólo el video con música, sin subtítulos encima.</p>
+        <a class="play" href="#player">▶ Reproducir</a>
+      </section>
+      <section class="player" id="player" aria-label="Video">
+        <video controls playsinline preload="metadata" src="./assets/clean/3-meses-sin-subtitulos.mp4"></video>
+      </section>
+    </main>
+  </body>
+</html>
