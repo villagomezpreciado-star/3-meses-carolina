@@ -473,6 +473,124 @@ svg {
   max-width: 560px;
 }
 
+.clean-netflix-page {
+  min-height: 100svh;
+  background: #050505;
+  color: #fff;
+  overflow-x: hidden;
+  position: relative;
+}
+
+.clean-netflix-bg {
+  position: fixed;
+  inset: 0;
+  background:
+    linear-gradient(90deg, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.78) 36%, rgba(0,0,0,0.50) 100%),
+    linear-gradient(180deg, rgba(0,0,0,0.36) 0%, #050505 88%),
+    url('/assets/hero.jpg') center / cover no-repeat;
+  filter: saturate(0.9);
+  opacity: 0.72;
+}
+
+.clean-netflix-topbar {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  left: 0;
+  padding: max(24px, env(safe-area-inset-top)) 4vw 18px;
+  position: fixed;
+  right: 0;
+  top: 0;
+  z-index: 5;
+}
+
+.clean-netflix-logo {
+  color: var(--accent-red);
+  font-size: clamp(1.6rem, 5vw, 2.7rem);
+  font-weight: 900;
+  letter-spacing: -0.04em;
+}
+
+.clean-netflix-back {
+  background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.14);
+  border-radius: 4px;
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 700;
+  padding: 10px 16px;
+}
+
+.clean-netflix-hero {
+  align-items: center;
+  display: grid;
+  gap: clamp(28px, 5vw, 72px);
+  grid-template-columns: minmax(0, 0.92fr) minmax(280px, 430px);
+  min-height: 100svh;
+  padding: 112px 5vw 56px;
+  position: relative;
+  z-index: 1;
+}
+
+.clean-netflix-copy {
+  max-width: 680px;
+}
+
+.clean-netflix-kicker {
+  color: var(--accent-red);
+  font-size: 0.95rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  margin: 0 0 14px;
+  text-transform: uppercase;
+}
+
+.clean-netflix-copy h1 {
+  font-size: clamp(3.2rem, 9vw, 7rem);
+  line-height: 0.92;
+  margin: 0 0 18px;
+}
+
+.clean-netflix-copy p:not(.clean-netflix-kicker) {
+  color: rgba(255,255,255,0.82);
+  font-size: clamp(1rem, 2vw, 1.3rem);
+  line-height: 1.45;
+  margin: 0 0 28px;
+  max-width: 520px;
+}
+
+.clean-netflix-cta {
+  align-items: center;
+  background: #fff;
+  border-radius: 4px;
+  color: #000;
+  display: inline-flex;
+  font-size: 1.1rem;
+  font-weight: 800;
+  gap: 10px;
+  min-height: 52px;
+  padding: 0 24px;
+}
+
+.clean-netflix-player {
+  justify-self: center;
+  width: min(100%, 430px);
+}
+
+.clean-netflix-player .video-player {
+  margin: 0;
+}
+
+.clean-netflix-player .video-container {
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: 10px;
+  box-shadow: 0 30px 90px rgba(0,0,0,0.72);
+}
+
+.clean-netflix-player .video-hint {
+  display: none;
+}
+
 .episode-empty {
   padding: 110px 4%;
 }
@@ -1222,6 +1340,31 @@ svg {
 }
 
 @media (max-width: 480px) {
+  .clean-netflix-topbar {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+
+  .clean-netflix-hero {
+    align-items: start;
+    grid-template-columns: 1fr;
+    min-height: 100svh;
+    padding: 92px 20px 40px;
+  }
+
+  .clean-netflix-copy h1 {
+    font-size: 3rem;
+  }
+
+  .clean-netflix-copy p:not(.clean-netflix-kicker) {
+    font-size: 1rem;
+    margin-bottom: 18px;
+  }
+
+  .clean-netflix-player {
+    width: min(100%, 390px);
+  }
+
   .watch-meta {
     padding-top: 74px;
   }

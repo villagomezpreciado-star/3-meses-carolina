@@ -7,6 +7,7 @@ const Home = lazy(() => import('./pages/Home'));
 const Browse = lazy(() => import('./pages/Browse'));
 const Episode = lazy(() => import('./pages/Episode'));
 const Movie = lazy(() => import('./pages/Movie'));
+const CleanMovie = lazy(() => import('./pages/CleanMovie'));
 const CreditsPage = lazy(() => import('./pages/CreditsPage'));
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
@@ -18,6 +19,7 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
           <Route path="/browse" element={<Browse />} />
           <Route path="/episode/:id" element={<Episode />} />
           <Route path="/movie" element={<Movie />} />
+          <Route path="/clean" element={<CleanMovie />} />
           <Route path="/credits" element={<CreditsPage />} />
         </Routes>
       </Suspense>
