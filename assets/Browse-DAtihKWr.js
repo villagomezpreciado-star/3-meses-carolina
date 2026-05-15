@@ -1,0 +1,1 @@
+import{j as o}from"./index-BEJe8y8p.js";import{c as t}from"./content-Dz0T9_pP.js";import{P as r}from"./ProfileSelection-sbVeNLPu.js";import"./assets-U_T46OiN.js";const e=t;function a(){return o.jsx(r,{data:e})}export{a as default};
