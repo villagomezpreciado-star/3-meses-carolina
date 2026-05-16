@@ -1,0 +1,275 @@
+# APEX — Implementation Plan (for Codex)
+
+> Hand this entire file to Codex on your Mac:
+> `codex exec --full-auto --sandbox workspace-write - < APEX_PLAN.md`
+> Run it from the root of a clone of the `3-meses-carolina` repo. This plan
+> REPLACES the existing Carolina memory site with the APEX application.
+
+---
+
+## 1. Goal
+
+Build APEX: a mobile-first Next.js 14 web app that analyzes a user's face via
+the Anthropic API and produces a brutally honest, evidence-based 90-day physical
+optimization roadmap, exportable to PDF.
+
+## 2. Codebase context
+
+The repo currently holds a Vite + Remotion "Netflix memory site" (Spanish,
+unrelated to APEX). **This build replaces it entirely.**
+
+- **Delete first** (old project — remove these paths completely):
+  `index.html`, `clean.html` (in public/), `vite.config.ts`, `tsconfig.node.json`,
+  `remotion.config.ts`, `vercel.json`, `src/`, `scripts/`,
+  `public/assets/`, `public/clean.html`, `.github/workflows/deploy.yml`.
+- **Keep**: `.git/`, `.claude/` (do not touch), `package-lock.json` will be
+  regenerated.
+- Target stack: Next.js 14 (App Router), TypeScript, Tailwind CSS, shadcn/ui,
+  `@anthropic-ai/sdk`, `jspdf`, `react-markdown`. Deploy target: Vercel.
+- All Anthropic calls are **server-side only** (App Router route handlers).
+  The API key is read from `process.env.ANTHROPIC_API_KEY` and never sent to
+  the client.
+
+## 3. Files to create
+
+```
+package.json                      next.config.mjs       tsconfig.json
+tailwind.config.ts                postcss.config.mjs    components.json
+.env.local.example                .gitignore (rewrite)  README.md (rewrite)
+app/layout.tsx                     app/globals.css       app/page.tsx
+app/api/analyze/route.ts           app/api/deep-dive/route.ts
+app/api/roadmap/route.ts
+lib/anthropic.ts                   lib/prompts.ts        lib/types.ts
+lib/pdf.ts                         lib/utils.ts          lib/image.ts
+components/ui/*                    (shadcn: button, card, progress, input,
+                                    label, select, textarea, accordion)
+components/ProgressBar.tsx         components/LoadingState.tsx
+components/ScoreCard.tsx
+components/steps/UploadStep.tsx    components/steps/ScoreDashboard.tsx
+components/steps/DeepDive.tsx      components/steps/RoadmapStep.tsx
+components/steps/ExportStep.tsx
+hooks/useApexFlow.ts
+```
+
+## 4. Implementation steps
+
+### 4.1 Project scaffold
+1. Delete all old-project files listed in §2.
+2. Create `package.json`: Next.js 14 (`next`, `react`, `react-dom` v18),
+   scripts `dev`/`build`/`start`/`lint`. Dependencies: `@anthropic-ai/sdk`,
+   `jspdf`, `react-markdown`, `tailwindcss`, `tailwind-merge`, `clsx`,
+   `class-variance-authority`, `lucide-react`, Radix primitives used by the
+   shadcn components above. Dev deps: `typescript`, `@types/*`, `eslint`,
+   `eslint-config-next`, `autoprefixer`, `postcss`.
+3. Standard Next.js config: `next.config.mjs`, `tsconfig.json` (App Router,
+   `paths` alias `@/*` → repo root), `tailwind.config.ts`, `postcss.config.mjs`,
+   `components.json` for shadcn.
+4. `.gitignore`: `node_modules/`, `.next/`, `.env*.local`, `.DS_Store`.
+5. `.env.local.example` with `ANTHROPIC_API_KEY=`.
+
+### 4.2 Shared lib
+6. `lib/utils.ts`: shadcn `cn()` helper (clsx + tailwind-merge).
+7. `lib/types.ts`: TypeScript types — `UserProfile` (age, heightCm, weightKg,
+   hasBeard, doesSkincare, sleepHours, dietType, trainingFrequency),
+   `CategoryScore` (name, score, assessment, highest_leverage_action),
+   `FaceAnalysis` (overall_score, categories[], strongest_feature,
+   highest_leverage_change, notes), `Roadmap` (phases with weeks + tasks),
+   `FlowStep` enum (`upload | analyzing | scores | deepdive | roadmap | export`).
+8. `lib/anthropic.ts`: export a singleton `Anthropic` client built from
+   `process.env.ANTHROPIC_API_KEY` (throw a clear error if missing). Export
+   `MODEL` constant — use `"claude-sonnet-4-5-20250929"` (latest Sonnet; the
+   spec's `claude-sonnet-4-20250514` is the older Sonnet 4 — keep it in ONE
+   constant so it is trivial to change). Export a `safeParseJSON<T>(raw)`
+   helper that strips ```` ```json ```` fences and trailing prose, attempts
+   `JSON.parse`, and returns `{ ok, data, error }`.
+9. `lib/prompts.ts`: export the three system prompts VERBATIM as written in
+   §6 of this document — `FACE_ANALYSIS_PROMPT` (constant string),
+   `deepDivePrompt(category, score)` and `roadmapPrompt(analysisJSON, profile)`
+   (functions that interpolate). Mark long static system prompts with
+   `cache_control: { type: "ephemeral" }` when sent, for prompt caching.
+10. `lib/image.ts`: client-side helper `compressImage(file)` — draw to canvas,
+    resize so the long edge ≤ 1568px, export JPEG quality 0.85, return
+    `{ base64, mediaType }` (base64 without the data-URL prefix).
+
+### 4.3 API routes (server-side, `runtime = "nodejs"`)
+11. `POST /api/analyze`: body = `{ front: {base64,mediaType}, side?: {...},
+    profile }`. Build a `messages.create` call: system = `FACE_ANALYSIS_PROMPT`;
+    user message = image block(s) + a text block summarizing the profile.
+    Request JSON, run result through `safeParseJSON<FaceAnalysis>`. On parse
+    failure, retry ONCE with an appended "return ONLY valid JSON" instruction.
+    Return the parsed analysis or a 502 with a readable message. Do NOT stream.
+12. `POST /api/deep-dive`: body = `{ category, score }`. Call
+    `messages.stream` with the web search tool enabled
+    (`tools: [{ type: "web_search_20250305", name: "web_search",
+    max_uses: 5 }]`) and system = `deepDivePrompt(...)`. Stream only the text
+    deltas back to the client as a `text/plain` streaming `Response` (ignore
+    tool-use/tool-result blocks for display). The deep dive returns prose, not
+    JSON.
+13. `POST /api/roadmap`: body = `{ analysis, profile }`. Call `messages.create`
+    with system = `roadmapPrompt(...)`, request structured JSON, parse with
+    `safeParseJSON<Roadmap>` (+ one retry). Return the roadmap JSON. Do NOT
+    stream.
+14. Every route: wrap in try/catch, return JSON `{ error }` with proper status,
+    handle missing API key, Anthropic rate-limit/4xx/5xx distinctly.
+
+### 4.4 State machine
+15. `hooks/useApexFlow.ts`: a `useReducer`-based hook holding `step`,
+    `profile`, `frontPhoto`, `sidePhoto`, `analysis`, `activeCategory`,
+    `roadmap`, and per-request `loading`/`error`. Exposes actions: `setPhotos`,
+    `setProfile`, `runAnalysis`, `openDeepDive(category)`, `closeDeepDive`,
+    `runRoadmap`, `goToExport`, `reset`. Persist `analysis` + `roadmap` +
+    `profile` to `sessionStorage` so a refresh mid-flow does not lose work.
+
+### 4.5 UI (dark mode default, mobile-first, one thing per screen)
+16. `app/layout.tsx` + `app/globals.css`: dark theme tokens, Tailwind base,
+    set `<html class="dark">`, system font stack, minimal aesthetic.
+17. `app/page.tsx`: client component. Renders `ProgressBar` (steps 1–6) +
+    switches on `step` to render the matching step component. Holds the
+    `useApexFlow` instance.
+18. `ProgressBar.tsx`: 6-segment bar fixed at top, active/complete states.
+19. `LoadingState.tsx`: full-screen loader cycling honest messages
+    ("Analyzing bone structure…", "Cross-referencing research…",
+    "Building your roadmap…"). Accepts a `messages` prop.
+20. `UploadStep.tsx` (Step 1): front photo upload (required) + side photo
+    (optional) with preview thumbnails; profile form (age, height, weight,
+    beard toggle, skincare toggle, sleep hours, diet select, training
+    frequency). On submit → `compressImage` both → `runAnalysis`.
+21. `ScoreDashboard.tsx` (Step 3): header with `overall_score`; grid of
+    `ScoreCard`s, one per category. "Continue to 90-Day Roadmap" button →
+    `runRoadmap`.
+22. `ScoreCard.tsx`: shows category name, score, color band — red ≤4,
+    yellow 5–6, green ≥7 — animated fill bar on mount, the 2-line assessment.
+    Tapping the card → `openDeepDive(category)`.
+23. `DeepDive.tsx` (Step 4): full-screen view with back button. On open,
+    POST to `/api/deep-dive` and render the streamed markdown live with
+    `react-markdown`. Show `LoadingState` until first token arrives.
+24. `RoadmapStep.tsx` (Step 5): render the roadmap JSON — three phases
+    (Week 1–2 / 3–8 / 9–12) as accordions, each week's tasks as a checklist.
+    "Export" button → `goToExport`.
+25. `ExportStep.tsx` (Step 6): "Download PDF" (calls `lib/pdf.ts`) and "Copy
+    summary to clipboard" (plain-text digest of scores + roadmap). A "Start
+    over" button → `reset`.
+26. `lib/pdf.ts`: `exportRoadmapPDF(analysis, roadmap, profile)` using `jsPDF`
+    — title page, score summary, then the phased roadmap; handle page breaks
+    so long content is not clipped; save as `apex-roadmap.pdf`.
+
+## 5. Edge cases
+- Claude returns markdown-fenced or trailing-prose JSON → `safeParseJSON`
+  strips fences; one automatic retry; then a user-facing error with a Retry
+  button. Never crash on `JSON.parse`.
+- Missing `ANTHROPIC_API_KEY` → routes return a clear 500; UI shows a setup
+  message, not a blank screen.
+- Large/HEIC photos → `compressImage` resizes; reject non-image files in the
+  picker.
+- Side photo omitted → analysis proceeds with the front photo only; prompt
+  text notes the side photo is absent.
+- Anthropic rate limit / overload → surface "high demand, try again" with
+  Retry; do not silently hang.
+- Deep-dive stream interrupted → show partial content + a Retry control.
+- PDF with a long roadmap → multi-page; verify nothing is cut off.
+- Every screen must look correct at 375px width and at desktop widths.
+
+## 6. System prompts — embed VERBATIM in `lib/prompts.ts`
+
+**FACE_ANALYSIS_PROMPT** (static system string):
+
+```
+You are a world-class facial aesthetics analyst trained on the latest research in orthotropics, maxillofacial science, evolutionary biology, and cosmetic medicine. Your job is to give an honest, specific, evidence-based facial assessment. Do NOT give empty compliments. Be direct but constructive.
+
+Analyze the uploaded face across these exact categories:
+
+1. FACIAL SYMMETRY — Compare left vs right side proportions. Note any significant asymmetries in eye level, jaw angle, or brow position.
+
+2. JAWLINE & MANDIBULAR DEFINITION — Assess jaw angle, gonial angle visibility, chin projection, and overall lower third strength. Reference ideal proportions from orthotropic research (Mew, AGGA studies).
+
+3. EYE AREA — Evaluate canthal tilt (positive vs negative), orbital bone projection, under-eye hollowing, brow positioning, and interocular distance.
+
+4. NOSE & MIDFACE — Assess nose-to-face ratio, tip projection, nasolabial angle. Evaluate midface length and cheekbone projection.
+
+5. SKIN QUALITY — Note visible texture, pores, pigmentation, acne scarring, overall clarity. Be specific about what you observe.
+
+6. FACIAL FAT DISTRIBUTION — Assess where fat is sitting (cheeks, under chin, neck). Estimate whether this is masking underlying bone structure.
+
+7. OVERALL FACIAL HARMONY — Golden ratio alignment, thirds proportions (hairline to brow, brow to nose, nose to chin), and overall aesthetic balance.
+
+8. STRONGEST FEATURE — What is genuinely working well.
+
+9. HIGHEST LEVERAGE CHANGE — The single change that would have the biggest positive impact.
+
+Return ONLY valid JSON in this exact format:
+{
+  "overall_score": number (1-10),
+  "categories": [
+    {
+      "name": string,
+      "score": number (1-10),
+      "assessment": string (2-3 sentences, specific and honest),
+      "highest_leverage_action": string (1 sentence, actionable)
+    }
+  ],
+  "strongest_feature": string,
+  "highest_leverage_change": string,
+  "notes": string (any additional observations)
+}
+```
+
+**deepDivePrompt(category, score)** — interpolate `[SCORE]` and `[CATEGORY]`:
+
+```
+You are a research expert in male physical optimization. The user scored [SCORE]/10 in [CATEGORY].
+
+Do a comprehensive deep dive. Search the web for the most current, evidence-based information. Pull from:
+- Peer-reviewed studies (PubMed, NIH)
+- Evidence-based practitioners (dermatologists, orthotropists, sports scientists)
+- Books that are genuinely respected (not pseudoscience)
+- YouTube channels with high credibility in this space
+- Reddit communities with actual signal (r/Skincareaddiction, r/mewing, r/fitness)
+- Real product recommendations with reasons
+
+Structure your response as:
+1. WHY this score — what the science says about the underlying cause
+2. WHAT actually works — interventions with evidence behind them (and what doesn't work despite hype)
+3. TIMELINE — realistic improvement expectations
+4. RESOURCES — specific books, channels, tools (with names, not vague references)
+5. 30-DAY STARTER PLAN — exactly what to do in the next 30 days
+
+Be direct. If something takes years (e.g. mewing), say so. If surgery is the only real fix for something, say that too. Do not sugarcoat. The user wants truth, not comfort.
+```
+
+**roadmapPrompt(analysisJSON, profile)** — interpolate `[JSON]` and the
+profile fields:
+
+```
+Based on this full facial assessment: [JSON], and this user profile: age [X], height [X], weight [X], sleep [X]hrs, training [X]x/week, diet [X], beard [yes/no], skincare [yes/no]:
+
+Build a realistic 90-day optimization roadmap. Priority order improvements by leverage (biggest ROI first).
+
+Structure:
+- WEEK 1-2: Foundation (habits to start immediately, zero-cost or low-cost)
+- WEEK 3-8: Build phase (consistency, adding tools/products/routines)
+- WEEK 9-12: Refine (advanced adjustments, assess progress)
+
+Cover: grooming, skincare, training adjustments relevant to facial goals (e.g. cutting body fat to reveal jaw), sleep optimization, hydration, nutrition flags, style/haircut notes.
+
+Format as structured JSON with phases, weeks, and daily/weekly tasks.
+Be specific. "Drink more water" is not acceptable. "Drink 3.5L of water daily, front-load in morning to aid lymphatic drainage" is acceptable.
+```
+
+## 7. Verification
+Run from the repo root:
+```
+npm install
+npm run build      # must compile with zero TypeScript/ESLint errors
+npm run dev        # open http://localhost:3000
+```
+Manually walk the full flow: upload a photo + profile → see scores → tap a
+card for a deep dive → continue to the roadmap → export PDF and copy summary.
+Confirm the layout holds at 375px width. (A real `ANTHROPIC_API_KEY` in
+`.env.local` is required for the API steps; the build itself must pass
+without one.)
+
+## 8. Cleanup
+Delete any files not listed above that were created during execution (e.g.
+`sitecustomize.py`, `__pycache__`, shim directories, scratch files). Ensure
+the old Vite/Remotion files from §2 are fully removed and no `dist/` or
+`renders/` artifacts remain.
